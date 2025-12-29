@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+class UWidgetComponent;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
@@ -19,7 +20,7 @@ class BLASTER_API ABlasterCharacter : public ACharacter
 
 public:
 	ABlasterCharacter();
-	
+
 	virtual void BeginPlay() override;
 
 #pragma region Movement
@@ -28,7 +29,7 @@ public:
 	void Look(const FInputActionValue& Value);
 
 #pragma endregion
-	
+
 #pragma region Input
 
 public:
@@ -37,16 +38,16 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputAction> MoveAction;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputAction> LookAction;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputAction> JumpAction;
-	
+
 #pragma endregion
-	
+
 #pragma region Camera
 
 private:
@@ -57,4 +58,15 @@ private:
 	TObjectPtr<UCameraComponent> CameraComponent;
 
 #pragma endregion
+
+protected:
+	UFUNCTION(BlueprintPure)
+	UWidgetComponent* GetOverheadWidgetComponent() const
+	{
+		return OverheadWidgetComponent;
+	}
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetOverheadWidgetComponent, Category="Blaster|UI")
+	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;
 };
