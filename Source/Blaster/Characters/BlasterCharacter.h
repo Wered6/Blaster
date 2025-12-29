@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+struct FInputActionValue;
+class UInputAction;
+class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -16,7 +19,34 @@ class BLASTER_API ABlasterCharacter : public ACharacter
 
 public:
 	ABlasterCharacter();
+	
+	virtual void BeginPlay() override;
 
+#pragma region Movement
+
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+
+#pragma endregion
+	
+#pragma region Input
+
+public:
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> LookAction;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> JumpAction;
+	
+#pragma endregion
+	
 #pragma region Camera
 
 private:
