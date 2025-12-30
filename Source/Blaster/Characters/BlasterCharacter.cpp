@@ -4,6 +4,7 @@
 #include "BlasterCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blaster/HUD/BlasterOverheadWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -25,7 +26,7 @@ ABlasterCharacter::ABlasterCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	
+
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("OverheadWidget");
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
 }
@@ -45,6 +46,11 @@ void ABlasterCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+
+	if (HasAuthority() && IsLocallyControlled())
+	{
+		ShowPlayerName();
 	}
 }
 
@@ -109,4 +115,32 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	}
+}
+
+void ABlasterCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	ShowPlayerName();
+}
+
+void ABlasterCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (HasAuthority() && !IsLocallyControlled())
+	{
+		ShowPlayerName();
+	}
+}
+
+void ABlasterCharacter::ShowPlayerName() const
+{
+	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
+	if (!ensure(BlasterOverheadWidget))
+	{
+		return;
+	}
+
+	BlasterOverheadWidget->ShowPlayerName(this);
 }

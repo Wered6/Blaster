@@ -3,11 +3,12 @@
 
 #include "BlasterOverheadWidget.h"
 #include "Components/TextBlock.h"
+#include "GameFramework/PlayerState.h"
 
 void UBlasterOverheadWidget::NativeDestruct()
 {
 	RemoveFromParent();
-	
+
 	Super::NativeDestruct();
 }
 
@@ -17,15 +18,16 @@ void UBlasterOverheadWidget::SetDisplayText(const FString& TextToDisplay) const
 	{
 		return;
 	}
-	
+
 	DisplayText->SetText(FText::FromString(TextToDisplay));
 }
 
-void UBlasterOverheadWidget::ShowPlayerNetRole(const APawn* InPawn)
+void UBlasterOverheadWidget::ShowPlayerNetRole(const APawn* InPawn) const
 {
 	const ENetRole RemoteRole{InPawn->GetRemoteRole()};
 	FString Role;
-	switch (RemoteRole) {
+	switch (RemoteRole)
+	{
 	case ROLE_None:
 		Role = FString("None");
 		break;
@@ -44,4 +46,16 @@ void UBlasterOverheadWidget::ShowPlayerNetRole(const APawn* InPawn)
 	}
 	const FString RemoteRoleString{FString::Printf(TEXT("Remote Role: %s"), *Role)};
 	SetDisplayText(RemoteRoleString);
+}
+
+void UBlasterOverheadWidget::ShowPlayerName(const APawn* InPawn) const
+{
+	const APlayerState* PlayerState{InPawn->GetPlayerState()};
+	if (!ensure(PlayerState))
+	{
+		return;
+	}
+	
+	const FString PlayerName{PlayerState->GetPlayerName()};
+	SetDisplayText(PlayerName);
 }

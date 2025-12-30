@@ -69,4 +69,12 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetOverheadWidgetComponent, Category="Blaster|UI")
 	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;
+
+public:
+	virtual void OnRep_PlayerState() override;
+
+	virtual void PossessedBy(AController* NewController) override;
+	
+private:
+	void ShowPlayerName() const;
 };

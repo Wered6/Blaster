@@ -21,8 +21,10 @@ protected:
 	
 public:
 	void SetDisplayText(const FString& TextToDisplay) const;
-	UFUNCTION(BlueprintCallable)
-	void ShowPlayerNetRole(const APawn* InPawn);
+	UFUNCTION(BlueprintCallable, Category="Blaster")
+	void ShowPlayerNetRole(const APawn* InPawn) const;
+	UFUNCTION(BlueprintCallable, Category="Blaster")
+	void ShowPlayerName(const APawn* InPawn) const;
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> DisplayText;
