@@ -23,6 +23,14 @@ public:
 
 	virtual void BeginPlay() override;
 
+public:
+	virtual void PossessedBy(AController* NewController) override;
+	
+	virtual void OnRep_PlayerState() override;
+
+private:
+	void ShowPlayerName() const;
+
 #pragma region Movement
 
 	void Move(const FInputActionValue& Value);
@@ -59,6 +67,8 @@ private:
 
 #pragma endregion
 
+#pragma region HUD
+
 protected:
 	UFUNCTION(BlueprintPure)
 	UWidgetComponent* GetOverheadWidgetComponent() const
@@ -67,14 +77,8 @@ protected:
 	}
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetOverheadWidgetComponent, Category="Blaster|UI")
+	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetOverheadWidgetComponent, Category="Blaster|HUD")
 	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;
 
-public:
-	virtual void OnRep_PlayerState() override;
-
-	virtual void PossessedBy(AController* NewController) override;
-	
-private:
-	void ShowPlayerName() const;
+#pragma endregion
 };

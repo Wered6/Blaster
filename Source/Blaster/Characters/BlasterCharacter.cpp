@@ -48,10 +48,42 @@ void ABlasterCharacter::BeginPlay()
 		}
 	}
 
+	// on the server, pawn that is controlled by the host
 	if (HasAuthority() && IsLocallyControlled())
 	{
 		ShowPlayerName();
 	}
+}
+
+void ABlasterCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// on the server, pawns that are NOT controlled by the host
+	// doesn't need check for Authority because PossessBy is getting called only on server
+	if (!IsLocallyControlled())
+	{
+		ShowPlayerName();
+	}
+}
+
+void ABlasterCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// on the clients
+	ShowPlayerName();
+}
+
+void ABlasterCharacter::ShowPlayerName() const
+{
+	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
+	if (!ensure(BlasterOverheadWidget))
+	{
+		return;
+	}
+
+	BlasterOverheadWidget->ShowPlayerName(this);
 }
 
 void ABlasterCharacter::Move(const FInputActionValue& Value)
@@ -115,32 +147,4 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	}
-}
-
-void ABlasterCharacter::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
-
-	ShowPlayerName();
-}
-
-void ABlasterCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	if (HasAuthority() && !IsLocallyControlled())
-	{
-		ShowPlayerName();
-	}
-}
-
-void ABlasterCharacter::ShowPlayerName() const
-{
-	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
-	if (!ensure(BlasterOverheadWidget))
-	{
-		return;
-	}
-
-	BlasterOverheadWidget->ShowPlayerName(this);
 }
