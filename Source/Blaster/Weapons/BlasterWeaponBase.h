@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BlasterWeapon.generated.h"
+#include "BlasterWeaponBase.generated.h"
 
 class UWidgetComponent;
 class USphereComponent;
@@ -20,23 +20,35 @@ enum class EBlasterWeaponState : uint8
 };
 
 UCLASS()
-class BLASTER_API ABlasterWeapon : public AActor
+class BLASTER_API ABlasterWeaponBase : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	ABlasterWeapon();
+	ABlasterWeaponBase();
+
+	void ShowPickUpWidget(const bool bShowWidget) const;
+
+	FORCEINLINE void SetWeaponState(const EBlasterWeaponState State)
+	{
+		WeaponState = State;
+	}
 
 protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	virtual void OnAreaSphereOverlap(UPrimitiveComponent* OverlappedComponent,
-	                                 AActor* OtherActor,
-	                                 UPrimitiveComponent* OtherComp,
-	                                 int32 OtherBodyIndex,
-	                                 bool bFromSweep,
-	                                 const FHitResult& SweepResult);
+	virtual void OnAreaSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	                                      AActor* OtherActor,
+	                                      UPrimitiveComponent* OtherComp,
+	                                      int32 OtherBodyIndex,
+	                                      bool bFromSweep,
+	                                      const FHitResult& SweepResult);
+	UFUNCTION()
+	virtual void OnAreaSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
+	                                    AActor* OtherActor,
+	                                    UPrimitiveComponent* OtherComp,
+	                                    int32 OtherBodyIndex);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Blaster|Weapon Properties")

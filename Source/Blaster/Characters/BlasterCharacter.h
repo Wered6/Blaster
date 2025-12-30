@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+class UBlasterCombatComponent;
+class ABlasterWeaponBase;
 class UWidgetComponent;
 struct FInputActionValue;
 class UInputAction;
@@ -21,22 +23,18 @@ class BLASTER_API ABlasterCharacter : public ACharacter
 public:
 	ABlasterCharacter();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PostInitializeComponents() override;
+
 	virtual void BeginPlay() override;
 
 public:
 	virtual void PossessedBy(AController* NewController) override;
-	
+
 	virtual void OnRep_PlayerState() override;
 
 private:
 	void ShowPlayerName() const;
-
-#pragma region Movement
-
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-
-#pragma endregion
 
 #pragma region Input
 
@@ -44,6 +42,10 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Equip();
+	
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 
@@ -53,6 +55,8 @@ private:
 	TObjectPtr<UInputAction> LookAction;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputAction> JumpAction;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> EquipAction;
 
 #pragma endregion
 
@@ -81,4 +85,18 @@ private:
 	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;
 
 #pragma endregion
+
+public:
+	void SetOverlappingWeapon(ABlasterWeaponBase* Weapon);
+
+private:
+
+	UFUNCTION()
+	void OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon);
+
+	UPROPERTY(ReplicatedUsing=OnRep_OverlappingWeapon)
+	TObjectPtr<ABlasterWeaponBase> OverlappingWeapon;
+
+	UPROPERTY(VisibleAnywhere, Category="Blaster|Combat")
+	TObjectPtr<UBlasterCombatComponent> CombatComponent;
 };

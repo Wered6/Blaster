@@ -5,10 +5,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blaster/HUD/BlasterOverheadWidget.h"
+#include "Blaster/Weapons/BlasterCombatComponent.h"
+#include "Blaster/Weapons/BlasterWeaponBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 ABlasterCharacter::ABlasterCharacter()
@@ -29,6 +32,23 @@ ABlasterCharacter::ABlasterCharacter()
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("OverheadWidget");
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
+
+	CombatComponent = CreateDefaultSubobject<UBlasterCombatComponent>("CombatComponent");
+	CombatComponent->SetIsReplicated(true);
+}
+
+void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly)
+}
+
+void ABlasterCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	CombatComponent->BlasterCharacter = this;
 }
 
 void ABlasterCharacter::BeginPlay()
@@ -86,6 +106,28 @@ void ABlasterCharacter::ShowPlayerName() const
 	BlasterOverheadWidget->ShowPlayerName(this);
 }
 
+void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (!ensure(MoveAction && LookAction && JumpAction && EquipAction))
+	{
+		return;
+	}
+
+	if (UEnhancedInputComponent* EnhancedInputComponent{Cast<UEnhancedInputComponent>(PlayerInputComponent)})
+	{
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::Move);
+
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::Look);
+
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ABlasterCharacter::Equip);
+	}
+}
+
 void ABlasterCharacter::Move(const FInputActionValue& Value)
 {
 	if (!Value.IsNonZero())
@@ -126,25 +168,45 @@ void ABlasterCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxisVector.Y);
 }
 
-void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ABlasterCharacter::Equip()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (!ensure(MoveAction && LookAction && JumpAction))
+	if (HasAuthority())
 	{
-		return;
+		CombatComponent->EquipWeapon(OverlappingWeapon);
 	}
+}
 
-	if (UEnhancedInputComponent* EnhancedInputComponent{Cast<UEnhancedInputComponent>(PlayerInputComponent)})
+void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)
+{
+	if (IsLocallyControlled())
 	{
-		// Move
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+		if (OverlappingWeapon)
+		{
+			OverlappingWeapon->ShowPickUpWidget(false);
+			UE_LOG(LogTemp, Warning, TEXT("%s: %s"), TEXT(__FUNCTION__), *GetName());
+		}
+	}
+	OverlappingWeapon = Weapon;
+	if (IsLocallyControlled())
+	{
+		if (OverlappingWeapon)
+		{
+			OverlappingWeapon->ShowPickUpWidget(true);
+		}
+	}
+}
 
-		// Look
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
-
-		// Jump
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ABlasterCharacter::OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon)
+{
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickUpWidget(true);
+	}
+	if (LastWeapon)
+	{
+		LastWeapon->ShowPickUpWidget(false);
 	}
 }
