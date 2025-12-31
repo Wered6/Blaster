@@ -27,12 +27,11 @@ class BLASTER_API ABlasterWeaponBase : public AActor
 public:
 	ABlasterWeaponBase();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void ShowPickUpWidget(const bool bShowWidget) const;
 
-	FORCEINLINE void SetWeaponState(const EBlasterWeaponState State)
-	{
-		WeaponState = State;
-	}
+	void SetWeaponState(const EBlasterWeaponState State);
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,7 +50,10 @@ protected:
 	                                    int32 OtherBodyIndex);
 
 private:
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Weapon Properties")
+	UFUNCTION()
+	void OnRep_WeaponState();
+
+	UPROPERTY(ReplicatedUsing=OnRep_WeaponState, VisibleAnywhere, Category="Blaster|Weapon Properties")
 	EBlasterWeaponState WeaponState;
 
 	UPROPERTY(VisibleAnywhere, Category="Blaster|Weapon Properties")

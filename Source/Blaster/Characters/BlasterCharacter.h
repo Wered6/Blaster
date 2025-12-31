@@ -45,7 +45,7 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Equip();
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 
@@ -90,9 +90,11 @@ public:
 	void SetOverlappingWeapon(ABlasterWeaponBase* Weapon);
 
 private:
-
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon);
+
+	UFUNCTION(Server, Reliable)
+	void Server_Equip();
 
 	UPROPERTY(ReplicatedUsing=OnRep_OverlappingWeapon)
 	TObjectPtr<ABlasterWeaponBase> OverlappingWeapon;

@@ -22,11 +22,11 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	EquippedWeapon = Weapon;
 	EquippedWeapon->SetWeaponState(EBlasterWeaponState::Equipped);
 	const USkeletalMeshSocket* HandSocket{BlasterCharacter->GetMesh()->GetSocketByName(FName("RightHandSocket"))};
-	if (HandSocket)
+	if (!ensure(HandSocket))
 	{
-		HandSocket->AttachActor(EquippedWeapon, BlasterCharacter->GetMesh());
+		return;
 	}
+	HandSocket->AttachActor(EquippedWeapon, BlasterCharacter->GetMesh());
 
 	EquippedWeapon->SetOwner(BlasterCharacter);
-	EquippedWeapon->ShowPickUpWidget(false);
 }

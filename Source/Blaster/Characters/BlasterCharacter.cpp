@@ -175,6 +175,10 @@ void ABlasterCharacter::Equip()
 	{
 		CombatComponent->EquipWeapon(OverlappingWeapon);
 	}
+	else
+	{
+		Server_Equip();
+	}
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)
@@ -184,7 +188,6 @@ void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)
 		if (OverlappingWeapon)
 		{
 			OverlappingWeapon->ShowPickUpWidget(false);
-			UE_LOG(LogTemp, Warning, TEXT("%s: %s"), TEXT(__FUNCTION__), *GetName());
 		}
 	}
 	OverlappingWeapon = Weapon;
@@ -209,4 +212,9 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon)
 	{
 		LastWeapon->ShowPickUpWidget(false);
 	}
+}
+
+void ABlasterCharacter::Server_Equip_Implementation()
+{
+	CombatComponent->EquipWeapon(OverlappingWeapon);
 }
