@@ -19,15 +19,26 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+protected:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	bool IsWeaponEquipped() const
+	{
+		return bWeaponEquipped;
+	}
+
+private:
+	UPROPERTY(BlueprintGetter=IsWeaponEquipped, Category="Blaster|Weapon")
+	bool bWeaponEquipped{};
+
 #pragma region Character
 
 protected:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
-	ABlasterCharacter* GetBlasterCharacter()
+	ABlasterCharacter* GetBlasterCharacter() const
 	{
 		return BlasterCharacter;
 	}
-	
+
 private:
 	UPROPERTY(BlueprintGetter=GetBlasterCharacter, Category="Blaster|Character")
 	TObjectPtr<ABlasterCharacter> BlasterCharacter;

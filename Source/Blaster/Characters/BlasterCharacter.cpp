@@ -200,6 +200,11 @@ void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)
 	}
 }
 
+bool ABlasterCharacter::IsWeaponEquipped() const
+{
+	return CombatComponent && CombatComponent->EquippedWeapon;
+}
+
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon)

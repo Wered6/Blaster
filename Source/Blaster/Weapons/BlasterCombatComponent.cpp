@@ -5,11 +5,19 @@
 #include "BlasterWeaponBase.h"
 #include "Blaster/Characters/BlasterCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Net/UnrealNetwork.h"
 
 
 UBlasterCombatComponent::UBlasterCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UBlasterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UBlasterCombatComponent, EquippedWeapon)
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)

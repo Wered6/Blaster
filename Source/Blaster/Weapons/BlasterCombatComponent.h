@@ -19,12 +19,14 @@ public:
 	UBlasterCombatComponent();
 
 	friend ABlasterCharacter;
-	
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
 private:
 	UPROPERTY()
 	TObjectPtr<ABlasterCharacter> BlasterCharacter;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
 };

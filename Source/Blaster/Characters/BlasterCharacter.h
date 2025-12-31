@@ -88,6 +88,7 @@ private:
 
 public:
 	void SetOverlappingWeapon(ABlasterWeaponBase* Weapon);
+	bool IsWeaponEquipped() const;
 
 private:
 	UFUNCTION()
