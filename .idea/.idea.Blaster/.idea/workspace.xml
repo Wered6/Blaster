@@ -15,11 +15,7 @@
     <list default="true" id="514d93cb-68ba-4490-ab7f-090063651581" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/ABP_Blaster.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/ABP_Blaster.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_EquippedRun.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_EquippedRun.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/Weapons/BlasterCombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Weapons/BlasterCombatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/Weapons/BlasterCombatComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Weapons/BlasterCombatComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/BP_BlasterCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/BP_BlasterCharacter.uasset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +29,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://12" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://13" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/GameModes/BlasterLobbyGameMode.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -229,7 +225,7 @@
       <workItem from="1766990103312" duration="55361000" />
       <workItem from="1767175427662" duration="6097000" />
       <workItem from="1767199435004" duration="3856000" />
-      <workItem from="1767262896476" duration="9543000" />
+      <workItem from="1767262896476" duration="11459000" />
     </task>
     <servers />
   </component>

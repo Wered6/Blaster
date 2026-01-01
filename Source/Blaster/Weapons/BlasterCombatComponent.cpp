@@ -24,7 +24,12 @@ void UBlasterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
-	if (!ensure(BlasterCharacter && Weapon))
+	if (!ensure(BlasterCharacter))
+	{
+		return;
+	}
+
+	if (!Weapon)
 	{
 		return;
 	}
