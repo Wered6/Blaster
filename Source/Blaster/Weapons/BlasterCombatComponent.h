@@ -22,6 +22,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void BeginPlay() override;
+
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
 protected:
@@ -41,4 +43,9 @@ private:
 
 	UPROPERTY(Replicated)
 	bool bAiming;
+
+	UPROPERTY(EditAnywhere, Category="Blaster|Movement")
+	float BaseWalkSpeed;
+	UPROPERTY(EditAnywhere, Category="Blaster|Movement")
+	float AimWalkSpeed;
 };

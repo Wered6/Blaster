@@ -12,6 +12,9 @@
 UBlasterCombatComponent::UBlasterCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	BaseWalkSpeed = 600.f;
+	AimWalkSpeed = 450.f;
 }
 
 void UBlasterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -20,6 +23,13 @@ void UBlasterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 
 	DOREPLIFETIME(UBlasterCombatComponent, EquippedWeapon)
 	DOREPLIFETIME(UBlasterCombatComponent, bAiming)
+}
+
+void UBlasterCombatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
@@ -49,11 +59,19 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	BlasterCharacter->bUseControllerRotationYaw = true;
 }
 
+
 void UBlasterCombatComponent::SetAiming(const bool bInAiming)
 {
 	bAiming = bInAiming;
-
+	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
+	
 	Server_SetAiming(bInAiming);
+}
+
+void UBlasterCombatComponent::Server_SetAiming_Implementation(const bool bInAiming)
+{
+	bAiming = bInAiming;
+	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
 }
 
 void UBlasterCombatComponent::OnRep_EquippedWeapon()
@@ -63,9 +81,4 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 		BlasterCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 		BlasterCharacter->bUseControllerRotationYaw = true;
 	}
-}
-
-void UBlasterCombatComponent::Server_SetAiming_Implementation(const bool bInAiming)
-{
-	bAiming = bInAiming;
 }
