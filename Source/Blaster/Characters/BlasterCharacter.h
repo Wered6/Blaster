@@ -45,6 +45,9 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Equip();
+	void Crouch();
+	void AimStart();
+	void AimStop();
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -57,6 +60,10 @@ private:
 	TObjectPtr<UInputAction> JumpAction;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputAction> EquipAction;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> CrouchAction;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> AimAction;
 
 #pragma endregion
 
@@ -89,6 +96,7 @@ private:
 public:
 	void SetOverlappingWeapon(ABlasterWeaponBase* Weapon);
 	bool IsWeaponEquipped() const;
+	bool IsAiming() const;
 
 private:
 	UFUNCTION()

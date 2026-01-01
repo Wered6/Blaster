@@ -19,6 +19,8 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+#pragma region Weapon
+
 protected:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
 	bool IsWeaponEquipped() const
@@ -29,6 +31,8 @@ protected:
 private:
 	UPROPERTY(BlueprintGetter=IsWeaponEquipped, Category="Blaster|Weapon")
 	bool bWeaponEquipped{};
+
+#pragma endregion
 
 #pragma region Character
 
@@ -49,21 +53,27 @@ private:
 
 protected:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
-	float GetSpeed() const
+	FORCEINLINE float GetSpeed() const
 	{
 		return Speed;
 	}
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
-	bool IsAirborne() const
+	FORCEINLINE bool IsAirborne() const
 	{
 		return bAirborne;
 	}
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
-	bool IsAccelerating() const
+	FORCEINLINE bool IsAccelerating() const
 	{
 		return bAccelerating;
+	}
+
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool IsCrouched() const
+	{
+		return bCrouched;
 	}
 
 private:
@@ -73,6 +83,23 @@ private:
 	bool bAirborne;
 	UPROPERTY(BlueprintGetter=IsAccelerating, Category="Blaster|Movement")
 	bool bAccelerating;
+	UPROPERTY(BlueprintGetter=IsCrouched, Category="Blaster|Movement")
+	bool bCrouched;
+
+#pragma endregion
+
+#pragma region Weapon
+
+protected:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool IsAiming() const
+	{
+		return bAiming;
+	}
+
+private:
+	UPROPERTY(BlueprintGetter=IsAiming, Category="Blaster|Weapon")
+	bool bAiming;
 
 #pragma endregion
 };

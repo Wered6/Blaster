@@ -16,7 +16,7 @@
 
 ABlasterCharacter::ABlasterCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	SpringArmComponent->SetupAttachment(GetMesh());
@@ -35,6 +35,8 @@ ABlasterCharacter::ABlasterCharacter()
 
 	CombatComponent = CreateDefaultSubobject<UBlasterCombatComponent>("CombatComponent");
 	CombatComponent->SetIsReplicated(true);
+
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -110,7 +112,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (!ensure(MoveAction && LookAction && JumpAction && EquipAction))
+	if (!ensure(MoveAction && LookAction && JumpAction && EquipAction && CrouchAction && AimAction))
 	{
 		return;
 	}
@@ -125,6 +127,11 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ABlasterCharacter::Equip);
+
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ABlasterCharacter::Crouch);
+
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &ABlasterCharacter::AimStart);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ABlasterCharacter::AimStop);
 	}
 }
 
@@ -181,6 +188,34 @@ void ABlasterCharacter::Equip()
 	}
 }
 
+void ABlasterCharacter::Crouch()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		ACharacter::Crouch();
+	}
+}
+
+void ABlasterCharacter::AimStart()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->SetAiming(true);
+	}
+}
+
+void ABlasterCharacter::AimStop()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->SetAiming(false);
+	}
+}
+
 void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)
 {
 	if (IsLocallyControlled())
@@ -203,6 +238,11 @@ void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)
 bool ABlasterCharacter::IsWeaponEquipped() const
 {
 	return CombatComponent && CombatComponent->EquippedWeapon;
+}
+
+bool ABlasterCharacter::IsAiming() const
+{
+	return CombatComponent && CombatComponent->bAiming;
 }
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef

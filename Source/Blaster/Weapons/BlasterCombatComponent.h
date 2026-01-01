@@ -24,9 +24,18 @@ public:
 
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
+protected:
+	void SetAiming(const bool bInAiming);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetAiming(const bool bInAiming);
+
 private:
 	UPROPERTY()
 	TObjectPtr<ABlasterCharacter> BlasterCharacter;
 	UPROPERTY(Replicated)
 	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
+
+	UPROPERTY(Replicated)
+	bool bAiming;
 };

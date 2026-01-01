@@ -18,6 +18,7 @@ void UBlasterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UBlasterCombatComponent, EquippedWeapon)
+	DOREPLIFETIME(UBlasterCombatComponent, bAiming)
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
@@ -37,4 +38,16 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	HandSocket->AttachActor(EquippedWeapon, BlasterCharacter->GetMesh());
 
 	EquippedWeapon->SetOwner(BlasterCharacter);
+}
+
+void UBlasterCombatComponent::SetAiming(const bool bInAiming)
+{
+	bAiming = bInAiming;
+
+	Server_SetAiming(bInAiming);
+}
+
+void UBlasterCombatComponent::Server_SetAiming_Implementation(const bool bInAiming)
+{
+	bAiming = bInAiming;
 }
