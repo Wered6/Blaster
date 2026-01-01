@@ -76,6 +76,18 @@ protected:
 		return bCrouched;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetYawOffset() const
+	{
+		return YawOffset;
+	}
+
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetLean() const
+	{
+		return Lean;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=GetSpeed, Category="Blaster|Movement")
 	float Speed;
@@ -85,6 +97,15 @@ private:
 	bool bAccelerating;
 	UPROPERTY(BlueprintGetter=IsCrouched, Category="Blaster|Movement")
 	bool bCrouched;
+
+	UPROPERTY(BlueprintGetter=GetYawOffset, Category="Blaster|Movement")
+	float YawOffset;
+	UPROPERTY(BlueprintGetter=GetLean, Category="Blaster|Movement")
+	float Lean;
+	
+	FRotator LastFrameRotation;
+	FRotator CurrentRotation;
+	FRotator DeltaRotation;
 
 #pragma endregion
 
