@@ -28,6 +28,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 public:
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -93,6 +95,8 @@ private:
 
 #pragma endregion
 
+#pragma region Weapon
+
 public:
 	void SetOverlappingWeapon(ABlasterWeaponBase* Weapon);
 	bool IsWeaponEquipped() const;
@@ -110,4 +114,29 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category="Blaster|Combat")
 	TObjectPtr<UBlasterCombatComponent> CombatComponent;
+
+#pragma endregion
+
+#pragma region Movement
+
+public:
+	FORCEINLINE float GetYawAimOffest() const
+	{
+		return YawAimOffest;
+	}
+	
+	FORCEINLINE float GetPitchAimOffset() const
+	{
+		return PitchAimOffset;
+	}
+
+protected:
+	void AimOffset(const float DeltaTime);
+
+private:
+	float YawAimOffest;
+	float PitchAimOffset;
+	FRotator StartingAimRotation;
+
+#pragma endregion
 };

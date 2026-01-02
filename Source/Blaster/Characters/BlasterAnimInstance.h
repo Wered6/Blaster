@@ -88,6 +88,18 @@ protected:
 		return Lean;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetYawAimOffset() const
+	{
+		return YawAimOffset;
+	}
+
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetPitchAimOffset() const
+	{
+		return PitchAimOffset;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=GetSpeed, Category="Blaster|Movement")
 	float Speed;
@@ -102,10 +114,15 @@ private:
 	float YawOffset;
 	UPROPERTY(BlueprintGetter=GetLean, Category="Blaster|Movement")
 	float Lean;
-	
+
 	FRotator LastFrameRotation;
 	FRotator CurrentRotation;
 	FRotator DeltaRotation;
+
+	UPROPERTY(BlueprintGetter=GetYawAimOffset, Category="Blaster|Movement")
+	float YawAimOffset;
+	UPROPERTY(BlueprintGetter=GetPitchAimOffset, Category="Blaster|Movement")
+	float PitchAimOffset;
 
 #pragma endregion
 

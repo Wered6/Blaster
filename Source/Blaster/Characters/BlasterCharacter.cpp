@@ -12,6 +12,7 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -79,6 +80,13 @@ void ABlasterCharacter::BeginPlay()
 	{
 		ShowPlayerName();
 	}
+}
+
+void ABlasterCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	AimOffset(DeltaSeconds);
 }
 
 void ABlasterCharacter::PossessedBy(AController* NewController)
@@ -261,6 +269,38 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon)
 	{
 		LastWeapon->ShowPickUpWidget(false);
 	}
+}
+
+void ABlasterCharacter::AimOffset(const float DeltaTime)
+{
+	if (CombatComponent && !CombatComponent->EquippedWeapon)
+	{
+		return;
+	}
+
+	FVector Velocity{GetVelocity()};
+	Velocity.Z = 0.f;
+	const float Speed = Velocity.Size();
+
+	const bool bAirborne{GetCharacterMovement()->IsFalling()};
+
+	// standing still, not jumping
+	if (Speed == 0.f && !bAirborne)
+	{
+		const FRotator CurrentAimRotation{FRotator(0.f, GetBaseAimRotation().Yaw, 0.f)};
+		const FRotator DeltaAimRotation{UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation)};
+		YawAimOffest = DeltaAimRotation.Yaw;
+		bUseControllerRotationYaw = false;
+	}
+	// running or jumping
+	if (Speed > 0.f || bAirborne)
+	{
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		YawAimOffest = 0.f;
+		bUseControllerRotationYaw = true;
+	}
+
+	PitchAimOffset = GetBaseAimRotation().Pitch;
 }
 
 void ABlasterCharacter::Server_Equip_Implementation()
