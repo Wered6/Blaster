@@ -257,6 +257,16 @@ bool ABlasterCharacter::IsAiming() const
 	return CombatComponent && CombatComponent->bAiming;
 }
 
+ABlasterWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
+{
+	if (!CombatComponent)
+	{
+		return nullptr;
+	}
+
+	return CombatComponent->EquippedWeapon;
+}
+
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon)

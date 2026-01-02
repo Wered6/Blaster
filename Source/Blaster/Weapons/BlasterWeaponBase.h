@@ -33,6 +33,11 @@ public:
 
 	void SetWeaponState(const EBlasterWeaponState State);
 
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const
+	{
+		return WeaponMeshComponent;
+	}
+
 protected:
 	virtual void BeginPlay() override;
 

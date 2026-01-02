@@ -6,7 +6,9 @@
 #include "Animation/AnimInstance.h"
 #include "BlasterAnimInstance.generated.h"
 
+class ABlasterWeaponBase;
 class ABlasterCharacter;
+
 /**
  * 
  */
@@ -31,6 +33,8 @@ protected:
 private:
 	UPROPERTY(BlueprintGetter=IsWeaponEquipped, Category="Blaster|Weapon")
 	bool bWeaponEquipped{};
+	
+	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
 
 #pragma endregion
 
@@ -75,6 +79,12 @@ protected:
 	{
 		return bCrouched;
 	}
+	
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool IsAiming() const
+	{
+		return bAiming;
+	}
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
 	FORCEINLINE float GetYawOffset() const
@@ -100,6 +110,12 @@ protected:
 		return PitchAimOffset;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE FTransform GetLeftHandTransform() const
+	{
+		return LeftHandTransform;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=GetSpeed, Category="Blaster|Movement")
 	float Speed;
@@ -109,6 +125,8 @@ private:
 	bool bAccelerating;
 	UPROPERTY(BlueprintGetter=IsCrouched, Category="Blaster|Movement")
 	bool bCrouched;
+	UPROPERTY(BlueprintGetter=IsAiming, Category="Blaster|Weapon")
+	bool bAiming;
 
 	UPROPERTY(BlueprintGetter=GetYawOffset, Category="Blaster|Movement")
 	float YawOffset;
@@ -124,20 +142,8 @@ private:
 	UPROPERTY(BlueprintGetter=GetPitchAimOffset, Category="Blaster|Movement")
 	float PitchAimOffset;
 
-#pragma endregion
-
-#pragma region Weapon
-
-protected:
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
-	FORCEINLINE bool IsAiming() const
-	{
-		return bAiming;
-	}
-
-private:
-	UPROPERTY(BlueprintGetter=IsAiming, Category="Blaster|Weapon")
-	bool bAiming;
+	UPROPERTY(BlueprintGetter=GetLeftHandTransform, Category="Blaster|Movement")
+	FTransform LeftHandTransform;
 
 #pragma endregion
 };
