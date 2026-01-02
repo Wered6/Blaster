@@ -301,6 +301,13 @@ void ABlasterCharacter::AimOffset(const float DeltaTime)
 	}
 
 	PitchAimOffset = GetBaseAimRotation().Pitch;
+	if (!IsLocallyControlled() && PitchAimOffset > 90.f)
+	{
+		// map pitch from [270, 360) to [-90, 0)
+		const FVector2D InRange(270.f, 360.f);
+		const FVector2D OutRange(-90.f, 0.f);
+		PitchAimOffset = FMath::GetMappedRangeValueClamped(InRange, OutRange, PitchAimOffset);
+	}
 }
 
 void ABlasterCharacter::Server_Equip_Implementation()
