@@ -42,6 +42,8 @@ ABlasterCharacter::ABlasterCharacter()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+
+	TurningInPlace = ETurningInPlace::NotTurning;
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -212,6 +214,7 @@ void ABlasterCharacter::Crouch()
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::AimStart()
 {
 	if (CombatComponent)
@@ -220,6 +223,7 @@ void ABlasterCharacter::AimStart()
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::AimStop()
 {
 	if (CombatComponent)
@@ -301,6 +305,7 @@ void ABlasterCharacter::AimOffset(const float DeltaTime)
 		const FRotator DeltaAimRotation{UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation)};
 		YawAimOffest = DeltaAimRotation.Yaw;
 		bUseControllerRotationYaw = false;
+		TurnInPlace(DeltaTime);
 	}
 	// running or jumping
 	if (Speed > 0.f || bAirborne)
@@ -308,6 +313,7 @@ void ABlasterCharacter::AimOffset(const float DeltaTime)
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		YawAimOffest = 0.f;
 		bUseControllerRotationYaw = true;
+		TurningInPlace = ETurningInPlace::NotTurning;
 	}
 
 	PitchAimOffset = GetBaseAimRotation().Pitch;
@@ -317,6 +323,19 @@ void ABlasterCharacter::AimOffset(const float DeltaTime)
 		const FVector2D InRange(270.f, 360.f);
 		const FVector2D OutRange(-90.f, 0.f);
 		PitchAimOffset = FMath::GetMappedRangeValueClamped(InRange, OutRange, PitchAimOffset);
+	}
+}
+
+void ABlasterCharacter::TurnInPlace(float DeltaTime)
+{
+	UE_LOG(LogTemp, Warning, TEXT("YawAimOffset: %f"), YawAimOffest)
+	if (YawAimOffest > 90.f)
+	{
+		TurningInPlace = ETurningInPlace::Right;
+	}
+	else if (YawAimOffest < -90.f)
+	{
+		TurningInPlace = ETurningInPlace::Left;
 	}
 }
 

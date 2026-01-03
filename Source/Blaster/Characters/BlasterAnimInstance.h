@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "BlasterAnimInstance.generated.h"
 
+enum class ETurningInPlace : uint8;
 class ABlasterWeaponBase;
 class ABlasterCharacter;
 
@@ -33,8 +34,8 @@ protected:
 private:
 	UPROPERTY(BlueprintGetter=IsWeaponEquipped, Category="Blaster|Weapon")
 	bool bWeaponEquipped{};
-	
-	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
+
+	TWeakObjectPtr<ABlasterWeaponBase> EquippedWeapon;
 
 #pragma endregion
 
@@ -79,7 +80,7 @@ protected:
 	{
 		return bCrouched;
 	}
-	
+
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
 	FORCEINLINE bool IsAiming() const
 	{
@@ -116,6 +117,12 @@ protected:
 		return LeftHandTransform;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const
+	{
+		return TurningInPlace;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=GetSpeed, Category="Blaster|Movement")
 	float Speed;
@@ -144,6 +151,9 @@ private:
 
 	UPROPERTY(BlueprintGetter=GetLeftHandTransform, Category="Blaster|Movement")
 	FTransform LeftHandTransform;
+
+	UPROPERTY(BlueprintGetter=GetTurningInPlace, Category="Blaster|Movement")
+	ETurningInPlace TurningInPlace;
 
 #pragma endregion
 };

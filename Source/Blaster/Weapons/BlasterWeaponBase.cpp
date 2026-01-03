@@ -106,6 +106,7 @@ void ABlasterWeaponBase::OnAreaSphereEndOverlap(UPrimitiveComponent* OverlappedC
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterWeaponBase::OnRep_WeaponState()
 {
 	switch (WeaponState)

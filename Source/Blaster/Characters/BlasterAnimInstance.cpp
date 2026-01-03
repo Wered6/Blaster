@@ -33,11 +33,13 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	bWeaponEquipped = BlasterCharacter->IsWeaponEquipped();
 	EquippedWeapon = BlasterCharacter->GetEquippedWeapon();
+	const ABlasterWeaponBase* EquippedWeaponRaw = EquippedWeapon.Get();
 
 	bAirborne = BlasterCharacter->GetCharacterMovement()->IsFalling();
 	bAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
 	bCrouched = BlasterCharacter->bIsCrouched;
 	bAiming = BlasterCharacter->IsAiming();
+	TurningInPlace = BlasterCharacter->GetTurningInPlace();
 
 	// Offset Yaw for Strafing
 	const FRotator AimRotation{BlasterCharacter->GetBaseAimRotation()};
@@ -56,9 +58,9 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	YawAimOffset = BlasterCharacter->GetYawAimOffest();
 	PitchAimOffset = BlasterCharacter->GetPitchAimOffset();
 
-	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMeshComponent() && BlasterCharacter->GetMesh())
+	if (bWeaponEquipped && EquippedWeaponRaw && EquippedWeaponRaw->GetWeaponMeshComponent() && BlasterCharacter->GetMesh())
 	{
-		LeftHandTransform = EquippedWeapon->GetWeaponMeshComponent()->GetSocketTransform(FName("LeftHandSocket"), RTS_World);
+		LeftHandTransform = EquippedWeaponRaw->GetWeaponMeshComponent()->GetSocketTransform(FName("LeftHandSocket"), RTS_World);
 		FVector OutPosition;
 		FRotator OutRotation;
 		BlasterCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);

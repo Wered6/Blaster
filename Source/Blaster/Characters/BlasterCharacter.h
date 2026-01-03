@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+enum class ETurningInPlace : uint8;
 class UBlasterCombatComponent;
 class ABlasterWeaponBase;
 class UWidgetComponent;
@@ -14,6 +15,16 @@ class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
+
+UENUM(BlueprintType)
+enum class ETurningInPlace : uint8
+{
+	Left UMETA(DisplayName="Turning Left"),
+	Right UMETA(DisplayName="Turning Right"),
+	NotTurning UMETA(DisplayName="Not Turning"),
+
+	MAX UMETA(DisplayName="DefaultMAX")
+};
 
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter
@@ -101,7 +112,7 @@ public:
 	void SetOverlappingWeapon(ABlasterWeaponBase* Weapon);
 	bool IsWeaponEquipped() const;
 	bool IsAiming() const;
-	
+
 	ABlasterWeaponBase* GetEquippedWeapon() const;
 
 private:
@@ -126,19 +137,28 @@ public:
 	{
 		return YawAimOffest;
 	}
-	
+
 	FORCEINLINE float GetPitchAimOffset() const
 	{
 		return PitchAimOffset;
+	}
+
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const
+	{
+		return TurningInPlace;
 	}
 
 protected:
 	void AimOffset(const float DeltaTime);
 
 private:
+	void TurnInPlace(float DeltaTime);
+	
 	float YawAimOffest;
 	float PitchAimOffset;
 	FRotator StartingAimRotation;
+
+	ETurningInPlace TurningInPlace;
 
 #pragma endregion
 };

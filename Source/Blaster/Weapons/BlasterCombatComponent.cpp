@@ -74,6 +74,7 @@ void UBlasterCombatComponent::Server_SetAiming_Implementation(const bool bInAimi
 	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void UBlasterCombatComponent::OnRep_EquippedWeapon()
 {
 	if (EquippedWeapon)
