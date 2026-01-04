@@ -31,14 +31,14 @@ ABlasterCharacter::ABlasterCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 850.f, 0.f);
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("OverheadWidget");
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
 
 	CombatComponent = CreateDefaultSubobject<UBlasterCombatComponent>("CombatComponent");
 	CombatComponent->SetIsReplicated(true);
-
-	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -60,6 +60,18 @@ void ABlasterCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	CombatComponent->BlasterCharacter = this;
+}
+
+void ABlasterCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// on the server, pawns that are NOT controlled by the host
+	// doesn't need check for Authority because PossessBy is getting called only on server
+	if (!IsLocallyControlled())
+	{
+		ShowPlayerName();
+	}
 }
 
 void ABlasterCharacter::BeginPlay()
@@ -93,24 +105,24 @@ void ABlasterCharacter::Tick(float DeltaSeconds)
 	AimOffset(DeltaSeconds);
 }
 
-void ABlasterCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	// on the server, pawns that are NOT controlled by the host
-	// doesn't need check for Authority because PossessBy is getting called only on server
-	if (!IsLocallyControlled())
-	{
-		ShowPlayerName();
-	}
-}
-
 void ABlasterCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
 	// on the clients
 	ShowPlayerName();
+}
+
+void ABlasterCharacter::Jump()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Super::Jump();
+	}
 }
 
 void ABlasterCharacter::ShowPlayerName() const
@@ -139,7 +151,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::Look);
 
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABlasterCharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ABlasterCharacter::Equip);
