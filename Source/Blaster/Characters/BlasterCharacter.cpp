@@ -44,6 +44,8 @@ ABlasterCharacter::ABlasterCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	TurningInPlace = ETurningInPlace::NotTurning;
+	SetNetUpdateFrequency(66.f);
+	SetMinNetUpdateFrequency(33.f);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -304,7 +306,11 @@ void ABlasterCharacter::AimOffset(const float DeltaTime)
 		const FRotator CurrentAimRotation{FRotator(0.f, GetBaseAimRotation().Yaw, 0.f)};
 		const FRotator DeltaAimRotation{UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation)};
 		YawAimOffest = DeltaAimRotation.Yaw;
-		bUseControllerRotationYaw = false;
+		if (TurningInPlace == ETurningInPlace::NotTurning)
+		{
+			InterpYawAimOffset = YawAimOffest;
+		}
+		bUseControllerRotationYaw = true;
 		TurnInPlace(DeltaTime);
 	}
 	// running or jumping
@@ -328,7 +334,6 @@ void ABlasterCharacter::AimOffset(const float DeltaTime)
 
 void ABlasterCharacter::TurnInPlace(float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("YawAimOffset: %f"), YawAimOffest)
 	if (YawAimOffest > 90.f)
 	{
 		TurningInPlace = ETurningInPlace::Right;
@@ -336,6 +341,16 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 	else if (YawAimOffest < -90.f)
 	{
 		TurningInPlace = ETurningInPlace::Left;
+	}
+	if (TurningInPlace != ETurningInPlace::NotTurning)
+	{
+		InterpYawAimOffset = FMath::FInterpTo(InterpYawAimOffset, 0.f, DeltaTime, 4.f);
+		YawAimOffest = InterpYawAimOffset;
+		if (FMath::Abs(YawAimOffest) < 15.f)
+		{
+			TurningInPlace = ETurningInPlace::NotTurning;
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
 	}
 }
 

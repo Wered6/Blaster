@@ -155,6 +155,7 @@ private:
 	void TurnInPlace(float DeltaTime);
 	
 	float YawAimOffest;
+	float InterpYawAimOffset;
 	float PitchAimOffset;
 	FRotator StartingAimRotation;
 
