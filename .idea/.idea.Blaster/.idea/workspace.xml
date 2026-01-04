@@ -12,7 +12,54 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="514d93cb-68ba-4490-ab7f-090063651581" name="Changes" comment="" />
+    <list default="true" id="514d93cb-68ba-4490-ab7f-090063651581" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/CrouchTurn_L.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/CrouchTurn_L.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/CrouchTurn_R.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/CrouchTurn_R.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Bwd_Rifle_Hip.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Bwd_Rifle_Hip.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Bwd_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Bwd_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Fwd_Rifle_Hip.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Fwd_Rifle_Hip.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Fwd_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Fwd_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Lt_Rifle_Hip.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Lt_Rifle_Hip.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Lt_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Lt_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Rt_Rifle_Hip.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Rt_Rifle_Hip.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Rt_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Crouch_Walk_Rt_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_45_Right.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_45_Right.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_Lean_Lt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_Lean_Lt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_Lean_Rt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_Lean_Rt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_Rifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Bwd_Rifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_45_Left.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_45_Left.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_Lean_Lt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_Lean_Lt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_Lean_Rt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_Lean_Rt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_Rifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Fwd_Rifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Lt_Lean_Lt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Lt_Lean_Lt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Lt_Lean_Rt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Lt_Lean_Rt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Lt_Rifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Lt_Rifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Rt_Lean_Lt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Rt_Lean_Lt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Rt_Lean_Rt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Rt_Lean_Rt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Rt_Rifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Jog_Rt_Rifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/JumpDown.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/JumpDown.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/JumpUp.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/JumpUp.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/JumpUp_Trim_Rot.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/JumpUp_Trim_Rot.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/TurnLeft.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/TurnLeft.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/TurnRight.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/TurnRight.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Bwd_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Bwd_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Fwd_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Fwd_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Lt_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Lt_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Rt_Rifle_Ironsights.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/Animations/Walk_Rt_Rifle_Ironsights.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_CrouchWalk.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_CrouchWalk.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_CrouchWalk_2D.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_CrouchWalk_2D.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_JumpUp_End.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_JumpUp_End.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_JumpUp_Start.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_JumpUp_Start.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_Run.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_Run.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_Walk.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Assets/LearningKit_Games/Assets/Characters/Character/Animations/EpicCharacter_Walk.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/ABP_Blaster.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/ABP_Blaster.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_AimWalk.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_AimWalk.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_CrouchAimWalk.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_CrouchAimWalk.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_CrouchWalking.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_CrouchWalking.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_EquippedRun.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_EquippedRun.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_UnequippedIdleWalkRun.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Characters/Animation/BS_UnequippedIdleWalkRun.uasset" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,7 +72,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://5" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://0" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/GameModes/BlasterLobbyGameMode.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -39,7 +86,9 @@
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Developer/WidgetRegistration/Public/FToolkitWidgetStyle.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Editor/Persona/Private/SAnimCurveViewer.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Editor/UMGEditor/Public/Components/AssetThumbnailWidget.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Editor/UnrealEd/Private/Kismet2/KismetDebugUtilities.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/CoreUObject/Public/Templates/Casts.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/CoreUObject/Public/UObject/Object.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectPtr.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBaseUtility.h" root0="FORCE_HIGHLIGHTING" />
@@ -48,6 +97,7 @@
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Engine/Classes/Engine/EngineTypes.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Engine/Classes/GameFramework/Character.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Engine/Classes/GameFramework/GameModeBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Engine/Classes/GameFramework/Pawn.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../Program Files/Epic Games/UE_5.6/Engine/Source/Runtime/Engine/Classes/GameFramework/PawnMovementComponent.h" root0="FORCE_HIGHLIGHTING" />
@@ -223,6 +273,8 @@
       <workItem from="1767199435004" duration="3856000" />
       <workItem from="1767262896476" duration="15185000" />
       <workItem from="1767343592144" duration="8875000" />
+      <workItem from="1767512656131" duration="10753000" />
+      <workItem from="1767538084428" duration="703000" />
     </task>
     <servers />
   </component>
