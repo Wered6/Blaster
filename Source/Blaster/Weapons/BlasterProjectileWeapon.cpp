@@ -15,6 +15,11 @@ void ABlasterProjectileWeapon::Fire(const FVector& HitTargetLocation)
 {
 	Super::Fire(HitTargetLocation);
 
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	if (!ensure(ProjectileClass))
 	{
 		return;

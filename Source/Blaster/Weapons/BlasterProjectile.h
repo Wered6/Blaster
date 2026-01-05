@@ -17,10 +17,19 @@ class BLASTER_API ABlasterProjectile : public AActor
 public:
 	ABlasterProjectile();
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> CollisionBoxComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|VFX")
+	TObjectPtr<UParticleSystem> TracerParticleSystem;
+
+	UPROPERTY()
+	TObjectPtr<UParticleSystemComponent> TracerParticleSystemComponent;
 };

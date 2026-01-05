@@ -4,11 +4,14 @@
 #include "BlasterProjectile.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ABlasterProjectile::ABlasterProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	bReplicates = true;
 
 	CollisionBoxComponent = CreateDefaultSubobject<UBoxComponent>("CollisionBoxComponent");
 	SetRootComponent(CollisionBoxComponent);
@@ -22,4 +25,23 @@ ABlasterProjectile::ABlasterProjectile()
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
+}
+
+void ABlasterProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!ensure(TracerParticleSystem))
+	{
+		return;
+	}
+
+	TracerParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(
+		TracerParticleSystem,
+		CollisionBoxComponent,
+		FName(),
+		GetActorLocation(),
+		GetActorRotation(),
+		EAttachLocation::KeepWorldPosition
+	);
 }
