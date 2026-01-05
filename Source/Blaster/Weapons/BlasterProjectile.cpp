@@ -3,6 +3,7 @@
 
 #include "BlasterProjectile.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 
 ABlasterProjectile::ABlasterProjectile()
@@ -18,4 +19,7 @@ ABlasterProjectile::ABlasterProjectile()
 	ResponseContainer.SetResponse(ECC_Visibility, ECR_Block);
 	ResponseContainer.SetResponse(ECC_WorldStatic, ECR_Block);
 	CollisionBoxComponent->SetCollisionResponseToChannels(ResponseContainer);
+
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
+	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }

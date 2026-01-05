@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BlasterProjectile.generated.h"
 
+class UProjectileMovementComponent;
 class UBoxComponent;
 
 UCLASS()
@@ -17,6 +18,9 @@ public:
 	ABlasterProjectile();
 
 private:
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Collision")
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> CollisionBoxComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 };

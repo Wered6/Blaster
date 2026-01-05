@@ -19,6 +19,6 @@ public:
 	virtual void Fire(const FVector& HitTargetLocation) override;
 
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
 	TSubclassOf<ABlasterProjectile> ProjectileClass;
 };
