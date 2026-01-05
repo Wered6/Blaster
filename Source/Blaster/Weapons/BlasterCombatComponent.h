@@ -38,6 +38,11 @@ protected:
 	void FireStart();
 	void FireStop();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Fire();
+	UFUNCTION(Server, Reliable)
+	void Server_Fire();
+
 private:
 	UPROPERTY()
 	TObjectPtr<ABlasterCharacter> BlasterCharacter;
@@ -52,5 +57,5 @@ private:
 	UPROPERTY(EditAnywhere, Category="Blaster|Movement")
 	float AimWalkSpeed;
 
-	bool bFire;
+	bool bFireButtonPressed;
 };

@@ -86,19 +86,28 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 
 void UBlasterCombatComponent::FireStart()
 {
+	bFireButtonPressed = true;
+
+	Server_Fire();
+}
+
+void UBlasterCombatComponent::FireStop()
+{
+	bFireButtonPressed = false;
+}
+
+void UBlasterCombatComponent::Server_Fire_Implementation()
+{
+	Multicast_Fire();
+}
+
+void UBlasterCombatComponent::Multicast_Fire_Implementation()
+{
 	if (!EquippedWeapon)
 	{
 		return;
 	}
 
-	bFire = true;
-
 	BlasterCharacter->PlayFireMontage(bAiming);
-
 	EquippedWeapon->Fire();
-}
-
-void UBlasterCombatComponent::FireStop()
-{
-	bFire = false;
 }
