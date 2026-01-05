@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "BlasterCombatComponent.generated.h"
 
+#define TRACE_LENGTH 80000.f
 
 class ABlasterCharacter;
 class ABlasterWeaponBase;
@@ -23,6 +24,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void BeginPlay() override;
+	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
@@ -42,6 +45,8 @@ protected:
 	void Multicast_Fire();
 	UFUNCTION(Server, Reliable)
 	void Server_Fire();
+	
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
 private:
 	UPROPERTY()
