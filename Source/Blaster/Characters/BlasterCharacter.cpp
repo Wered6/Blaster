@@ -140,7 +140,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (!ensure(MoveAction && LookAction && JumpAction && EquipAction && CrouchAction && AimAction))
+	if (!ensure(MoveAction && LookAction && JumpAction && EquipAction && CrouchAction && AimAction && FireAction))
 	{
 		return;
 	}
@@ -160,6 +160,9 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &ABlasterCharacter::AimStart);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ABlasterCharacter::AimStop);
+
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABlasterCharacter::FireStart);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABlasterCharacter::FireStop);
 	}
 }
 
@@ -246,6 +249,22 @@ void ABlasterCharacter::AimStop()
 	}
 }
 
+void ABlasterCharacter::FireStart()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->FireStart();
+	}
+}
+
+void ABlasterCharacter::FireStop()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->FireStop();
+	}
+}
+
 void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)
 {
 	if (IsLocallyControlled())
@@ -283,6 +302,24 @@ ABlasterWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 	}
 
 	return CombatComponent->EquippedWeapon;
+}
+
+void ABlasterCharacter::PlayFireMontage(bool bAiming)
+{
+	if (!ensure(FireWeaponMontage))
+	{
+		return;
+	}
+
+	if (!CombatComponent->EquippedWeapon)
+	{
+		return;
+	}
+
+	UAnimInstance* AnimInstance{GetMesh()->GetAnimInstance()};
+	AnimInstance->Montage_Play(FireWeaponMontage);
+	const FName SectionName = FName(bAiming ? "RifleAim" : "RifleHip");
+	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef

@@ -35,6 +35,9 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	void FireStart();
+	void FireStop();
+
 private:
 	UPROPERTY()
 	TObjectPtr<ABlasterCharacter> BlasterCharacter;
@@ -48,4 +51,6 @@ private:
 	float BaseWalkSpeed;
 	UPROPERTY(EditAnywhere, Category="Blaster|Movement")
 	float AimWalkSpeed;
+
+	bool bFire;
 };

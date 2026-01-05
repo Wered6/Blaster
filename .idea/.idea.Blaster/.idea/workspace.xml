@@ -27,7 +27,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://1" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://2" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Characters/BlasterAnimInstance.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/GameModes/BlasterLobbyGameMode.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -234,7 +234,8 @@
       <workItem from="1767262896476" duration="15185000" />
       <workItem from="1767343592144" duration="8875000" />
       <workItem from="1767512656131" duration="10753000" />
-      <workItem from="1767538084428" duration="2435000" />
+      <workItem from="1767538084428" duration="2519000" />
+      <workItem from="1767624734220" duration="1443000" />
     </task>
     <servers />
   </component>

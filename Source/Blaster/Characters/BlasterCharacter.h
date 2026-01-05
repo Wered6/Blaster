@@ -63,6 +63,8 @@ private:
 	void Crouch();
 	void AimStart();
 	void AimStop();
+	void FireStart();
+	void FireStop();
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -79,6 +81,8 @@ private:
 	TObjectPtr<UInputAction> CrouchAction;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputAction> AimAction;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> FireAction;
 
 #pragma endregion
 
@@ -108,7 +112,7 @@ private:
 
 #pragma endregion
 
-#pragma region Weapon
+#pragma region Combat
 
 public:
 	void SetOverlappingWeapon(ABlasterWeaponBase* Weapon);
@@ -116,6 +120,8 @@ public:
 	bool IsAiming() const;
 
 	ABlasterWeaponBase* GetEquippedWeapon() const;
+	
+	void PlayFireMontage(bool bAiming);
 
 private:
 	UFUNCTION()
@@ -129,6 +135,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category="Blaster|Combat")
 	TObjectPtr<UBlasterCombatComponent> CombatComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Combat")
+	TObjectPtr<UAnimMontage> FireWeaponMontage; 
 
 #pragma endregion
 

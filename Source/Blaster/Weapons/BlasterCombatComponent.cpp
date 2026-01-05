@@ -64,7 +64,7 @@ void UBlasterCombatComponent::SetAiming(const bool bInAiming)
 {
 	bAiming = bInAiming;
 	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
-	
+
 	Server_SetAiming(bInAiming);
 }
 
@@ -82,4 +82,16 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 		BlasterCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 		BlasterCharacter->bUseControllerRotationYaw = true;
 	}
+}
+
+void UBlasterCombatComponent::FireStart()
+{
+	bFire = true;
+
+	BlasterCharacter->PlayFireMontage(bAiming);
+}
+
+void UBlasterCombatComponent::FireStop()
+{
+	bFire = false;
 }
