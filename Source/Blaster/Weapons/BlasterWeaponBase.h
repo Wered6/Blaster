@@ -38,7 +38,7 @@ public:
 		return WeaponMeshComponent;
 	}
 	
-	void Fire();
+	virtual void Fire(const FVector& HitTargetLocation);
 
 protected:
 	virtual void BeginPlay() override;

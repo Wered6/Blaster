@@ -140,9 +140,11 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		if (!TraceHitResult.bBlockingHit)
 		{
 			TraceHitResult.ImpactPoint = End;
+			HitTargetLocation = End;
 		}
 		else
 		{
+			HitTargetLocation = TraceHitResult.ImpactPoint;
 			DrawDebugSphere(
 				GetWorld(),
 				TraceHitResult.ImpactPoint,
@@ -167,5 +169,5 @@ void UBlasterCombatComponent::Multicast_Fire_Implementation()
 	}
 
 	BlasterCharacter->PlayFireMontage(bAiming);
-	EquippedWeapon->Fire();
+	EquippedWeapon->Fire(HitTargetLocation);
 }

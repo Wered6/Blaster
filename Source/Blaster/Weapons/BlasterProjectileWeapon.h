@@ -6,6 +6,8 @@
 #include "BlasterWeaponBase.h"
 #include "BlasterProjectileWeapon.generated.h"
 
+class ABlasterProjectile;
+
 UCLASS()
 class BLASTER_API ABlasterProjectileWeapon : public ABlasterWeaponBase
 {
@@ -13,4 +15,10 @@ class BLASTER_API ABlasterProjectileWeapon : public ABlasterWeaponBase
 
 public:
 	ABlasterProjectileWeapon();
+
+	virtual void Fire(const FVector& HitTargetLocation) override;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ABlasterProjectile> ProjectileClass;
 };

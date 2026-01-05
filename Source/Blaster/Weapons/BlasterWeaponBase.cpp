@@ -67,7 +67,7 @@ void ABlasterWeaponBase::SetWeaponState(const EBlasterWeaponState State)
 	}
 }
 
-void ABlasterWeaponBase::Fire()
+void ABlasterWeaponBase::Fire(const FVector& HitTargetLocation)
 {
 	if (!ensure(FireAnimation))
 	{
