@@ -86,9 +86,16 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 
 void UBlasterCombatComponent::FireStart()
 {
+	if (!EquippedWeapon)
+	{
+		return;
+	}
+
 	bFire = true;
 
 	BlasterCharacter->PlayFireMontage(bAiming);
+
+	EquippedWeapon->Fire();
 }
 
 void UBlasterCombatComponent::FireStop()

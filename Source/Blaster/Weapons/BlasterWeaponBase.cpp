@@ -23,9 +23,14 @@ ABlasterWeaponBase::ABlasterWeaponBase()
 	AreaSphereComponent->SetupAttachment(RootComponent);
 	AreaSphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	AreaSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AreaSphereComponent->SetRelativeLocation(FVector(0.f, 25.f, 12.f));
+	AreaSphereComponent->SetSphereRadius(76.f);
 
 	PickUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("PickUpWidgetComponent");
 	PickUpWidgetComponent->SetupAttachment(RootComponent);
+	PickUpWidgetComponent->SetRelativeLocation(FVector(0.f, 30.f, 40.f));
+	PickUpWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	PickUpWidgetComponent->SetDrawAtDesiredSize(true);
 }
 
 void ABlasterWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -60,6 +65,16 @@ void ABlasterWeaponBase::SetWeaponState(const EBlasterWeaponState State)
 	case EBlasterWeaponState::MAX:
 		break;
 	}
+}
+
+void ABlasterWeaponBase::Fire()
+{
+	if (!ensure(FireAnimation))
+	{
+		return;
+	}
+
+	WeaponMeshComponent->PlayAnimation(FireAnimation, false);
 }
 
 void ABlasterWeaponBase::BeginPlay()
@@ -122,5 +137,4 @@ void ABlasterWeaponBase::OnRep_WeaponState()
 	case EBlasterWeaponState::MAX:
 		break;
 	}
-	
 }

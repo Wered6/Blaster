@@ -37,6 +37,8 @@ public:
 	{
 		return WeaponMeshComponent;
 	}
+	
+	void Fire();
 
 protected:
 	virtual void BeginPlay() override;
@@ -69,4 +71,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category="Blaster|Weapon Properties")
 	TObjectPtr<UWidgetComponent> PickUpWidgetComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
+	TObjectPtr<UAnimationAsset> FireAnimation; 
 };
