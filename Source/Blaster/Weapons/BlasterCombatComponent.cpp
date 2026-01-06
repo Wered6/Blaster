@@ -36,9 +36,6 @@ void UBlasterCombatComponent::BeginPlay()
 void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	FHitResult HitResult;
-	TraceUnderCrosshairs(HitResult);
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
@@ -97,7 +94,10 @@ void UBlasterCombatComponent::FireStart()
 {
 	bFireButtonPressed = true;
 
-	Server_Fire();
+	FHitResult HitResult;
+	TraceUnderCrosshairs(HitResult);
+
+	Server_Fire(HitResult.ImpactPoint);
 }
 
 void UBlasterCombatComponent::FireStop()
@@ -105,7 +105,7 @@ void UBlasterCombatComponent::FireStop()
 	bFireButtonPressed = false;
 }
 
-void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
+void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) const
 {
 	FVector2D ViewportSize;
 	if (GEngine && GEngine->GameViewport)
@@ -136,32 +136,15 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			End,
 			ECC_Visibility
 		);
-
-		if (!TraceHitResult.bBlockingHit)
-		{
-			TraceHitResult.ImpactPoint = End;
-			HitTargetLocation = End;
-		}
-		else
-		{
-			HitTargetLocation = TraceHitResult.ImpactPoint;
-			DrawDebugSphere(
-				GetWorld(),
-				TraceHitResult.ImpactPoint,
-				12.f,
-				12,
-				FColor::Red
-			);
-		}
 	}
 }
 
-void UBlasterCombatComponent::Server_Fire_Implementation()
+void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
 {
-	Multicast_Fire();
+	Multicast_Fire(TraceHitTargetLocation);
 }
 
-void UBlasterCombatComponent::Multicast_Fire_Implementation()
+void UBlasterCombatComponent::Multicast_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
 {
 	if (!EquippedWeapon)
 	{
@@ -169,5 +152,5 @@ void UBlasterCombatComponent::Multicast_Fire_Implementation()
 	}
 
 	BlasterCharacter->PlayFireMontage(bAiming);
-	EquippedWeapon->Fire(HitTargetLocation);
+	EquippedWeapon->Fire(TraceHitTargetLocation);
 }

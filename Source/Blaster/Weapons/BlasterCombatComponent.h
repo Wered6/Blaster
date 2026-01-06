@@ -24,7 +24,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void BeginPlay() override;
-	
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
@@ -41,12 +41,12 @@ protected:
 	void FireStart();
 	void FireStop();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Fire();
 	UFUNCTION(Server, Reliable)
-	void Server_Fire();
-	
-	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+	void Server_Fire(const FVector_NetQuantize& TraceHitTargetLocation);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Fire(const FVector_NetQuantize& TraceHitTargetLocation);
+
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult) const;
 
 private:
 	UPROPERTY()
@@ -63,6 +63,4 @@ private:
 	float AimWalkSpeed;
 
 	bool bFireButtonPressed;
-	
-	FVector HitTargetLocation;
 };
