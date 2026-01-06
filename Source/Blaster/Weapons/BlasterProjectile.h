@@ -17,7 +17,16 @@ class BLASTER_API ABlasterProjectile : public AActor
 public:
 	ABlasterProjectile();
 
+	virtual void Destroyed() override;
+	
 protected:
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComponent,
+	                   AActor* OtherActor,
+	                   UPrimitiveComponent* OtherComp,
+	                   FVector NormalImpulse,
+	                   const FHitResult& Hit);
+
 	virtual void BeginPlay() override;
 
 private:
@@ -32,4 +41,10 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UParticleSystemComponent> TracerParticleSystemComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|VFX")
+	TObjectPtr<UParticleSystem> ImpactParticleSystem;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|SFX")
+	TObjectPtr<USoundCue> ImpactSound;
 };

@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 
 ABlasterProjectile::ABlasterProjectile()
@@ -27,6 +28,28 @@ ABlasterProjectile::ABlasterProjectile()
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
 
+void ABlasterProjectile::Destroyed()
+{
+	Super::Destroyed();
+
+	if (!ensure(ImpactParticleSystem && ImpactSound))
+	{
+		return;
+	}
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticleSystem, GetActorTransform());
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+}
+
+void ABlasterProjectile::OnHit(UPrimitiveComponent* HitComponent,
+                               AActor* OtherActor,
+                               UPrimitiveComponent* OtherComp,
+                               FVector NormalImpulse,
+                               const FHitResult& Hit)
+{
+	Destroy();
+}
+
 void ABlasterProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,4 +67,9 @@ void ABlasterProjectile::BeginPlay()
 		GetActorRotation(),
 		EAttachLocation::KeepWorldPosition
 	);
+
+	if (HasAuthority())
+	{
+		CollisionBoxComponent->OnComponentHit.AddDynamic(this, &ABlasterProjectile::OnHit);
+	}
 }

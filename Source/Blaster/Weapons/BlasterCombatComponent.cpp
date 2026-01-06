@@ -33,11 +33,6 @@ void UBlasterCombatComponent::BeginPlay()
 	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
-void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
 	if (!ensure(BlasterCharacter))
