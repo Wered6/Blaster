@@ -52,6 +52,7 @@ void ABlasterCasing::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CasingMeshComponent->AddImpulse(GetActorForwardVector() * ShellEjectionImpulse);
+	const FVector RandomShellDirection{FMath::VRandCone(GetActorForwardVector(), FMath::DegreesToRadians(15.f))};
+	CasingMeshComponent->AddImpulse(RandomShellDirection * ShellEjectionImpulse);
 	CasingMeshComponent->OnComponentHit.AddDynamic(this, &ABlasterCasing::OnHit);
 }
