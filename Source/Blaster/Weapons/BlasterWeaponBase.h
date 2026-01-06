@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BlasterWeaponBase.generated.h"
 
+class ABlasterCasing;
 class UWidgetComponent;
 class USphereComponent;
 
@@ -37,7 +38,7 @@ public:
 	{
 		return WeaponMeshComponent;
 	}
-	
+
 	virtual void Fire(const FVector& HitTargetLocation);
 
 protected:
@@ -73,5 +74,8 @@ private:
 	TObjectPtr<UWidgetComponent> PickUpWidgetComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
-	TObjectPtr<UAnimationAsset> FireAnimation; 
+	TObjectPtr<UAnimationAsset> FireAnimation;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
+	TSubclassOf<ABlasterCasing> CasingClass;
 };

@@ -2,9 +2,11 @@
 
 
 #include "BlasterWeaponBase.h"
+#include "BlasterCasing.h"
 #include "Blaster/Characters/BlasterCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -69,12 +71,21 @@ void ABlasterWeaponBase::SetWeaponState(const EBlasterWeaponState State)
 
 void ABlasterWeaponBase::Fire(const FVector& HitTargetLocation)
 {
-	if (!ensure(FireAnimation))
+	if (!ensure(FireAnimation && CasingClass))
 	{
 		return;
 	}
 
 	WeaponMeshComponent->PlayAnimation(FireAnimation, false);
+
+	const USkeletalMeshSocket* AmmoEjectSocket{WeaponMeshComponent->GetSocketByName(FName("AmmoEject"))};
+	if (!ensureMsgf(AmmoEjectSocket, TEXT("Wrong socket name for ammo eject")))
+	{
+		return;
+	}
+
+	const FTransform SocketTransform{AmmoEjectSocket->GetSocketTransform(WeaponMeshComponent)};
+	GetWorld()->SpawnActor<ABlasterCasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
 }
 
 void ABlasterWeaponBase::BeginPlay()
