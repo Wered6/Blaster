@@ -3,7 +3,9 @@
 
 #include "BlasterCombatComponent.h"
 #include "BlasterWeaponBase.h"
-#include "Blaster/Characters/BlasterCharacter.h"
+#include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/HUD/BlasterHUD.h"
+#include "Blaster/Player/BlasterPlayerController.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -31,14 +33,25 @@ void UBlasterCombatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	BlasterPlayerController = Cast<ABlasterPlayerController>(BlasterCharacter->GetController());
+	if (!ensureMsgf(BlasterPlayerController.Get(), TEXT("Probably BlasterPlayerController is not set in Game Mode")))
+	{
+		return;
+	}
+
+	BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+}
+
+void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	SetHUDCrosshairs(DeltaTime);
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
-	if (!ensure(BlasterCharacter))
-	{
-		return;
-	}
+	ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
 
 	if (!Weapon)
 	{
@@ -47,17 +60,17 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 
 	EquippedWeapon = Weapon;
 	EquippedWeapon->SetWeaponState(EBlasterWeaponState::Equipped);
-	const USkeletalMeshSocket* HandSocket{BlasterCharacter->GetMesh()->GetSocketByName(FName("RightHandSocket"))};
+	const USkeletalMeshSocket* HandSocket{BlasterCharacterRaw->GetMesh()->GetSocketByName(FName("RightHandSocket"))};
 	if (!ensure(HandSocket))
 	{
 		return;
 	}
-	HandSocket->AttachActor(EquippedWeapon, BlasterCharacter->GetMesh());
+	HandSocket->AttachActor(EquippedWeapon, BlasterCharacterRaw->GetMesh());
 
-	EquippedWeapon->SetOwner(BlasterCharacter);
+	EquippedWeapon->SetOwner(BlasterCharacterRaw);
 
-	BlasterCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
-	BlasterCharacter->bUseControllerRotationYaw = true;
+	BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
+	BlasterCharacterRaw->bUseControllerRotationYaw = true;
 }
 
 
@@ -80,8 +93,10 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 {
 	if (EquippedWeapon)
 	{
-		BlasterCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
-		BlasterCharacter->bUseControllerRotationYaw = true;
+		ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
+
+		BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
+		BlasterCharacterRaw->bUseControllerRotationYaw = true;
 	}
 }
 
@@ -132,6 +147,11 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) c
 			ECC_Visibility
 		);
 	}
+}
+
+void UBlasterCombatComponent::SetHUDCrosshairs(float DeltaTime)
+{
+	FBlasterCrosshairsPackage CrosshairPackage{EquippedWeapon ? EquippedWeapon->GetCrosshairsPackage() : FBlasterCrosshairsPackage()};
 }
 
 void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)

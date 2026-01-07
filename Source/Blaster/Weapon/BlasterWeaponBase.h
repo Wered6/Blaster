@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blaster/HUD/BlasterCrosshairs.h"
 #include "GameFramework/Actor.h"
 #include "BlasterWeaponBase.generated.h"
 
@@ -78,4 +79,21 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
 	TSubclassOf<ABlasterCasing> CasingClass;
+
+#pragma region Crosshairs
+
+public:
+	FORCEINLINE FBlasterCrosshairsPackage GetCrosshairsPackage()
+	{
+		return CrosshairsPackage;
+	}
+
+private:
+	/*
+	 * Textures for the weapon crosshairs
+	 */
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Crosshairs")
+	FBlasterCrosshairsPackage CrosshairsPackage;
+
+#pragma endregion
 };

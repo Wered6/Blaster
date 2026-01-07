@@ -8,6 +8,8 @@
 
 #define TRACE_LENGTH 80000.f
 
+class ABlasterHUD;
+class ABlasterPlayerController;
 class ABlasterCharacter;
 class ABlasterWeaponBase;
 
@@ -24,6 +26,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void BeginPlay() override;
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
@@ -46,18 +50,22 @@ protected:
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult) const;
 
+	void SetHUDCrosshairs(float DeltaTime);
+
 private:
-	UPROPERTY()
-	TObjectPtr<ABlasterCharacter> BlasterCharacter;
+	TWeakObjectPtr<ABlasterCharacter> BlasterCharacter;
+	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
+	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
+	
 	UPROPERTY(ReplicatedUsing=OnRep_EquippedWeapon)
 	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
 
 	UPROPERTY(Replicated)
 	bool bAiming;
 
-	UPROPERTY(EditAnywhere, Category="Blaster|Movement")
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
 	float BaseWalkSpeed;
-	UPROPERTY(EditAnywhere, Category="Blaster|Movement")
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
 	float AimWalkSpeed;
 
 	bool bFireButtonPressed;

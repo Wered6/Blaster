@@ -3,7 +3,7 @@
 
 #include "BlasterWeaponBase.h"
 #include "BlasterCasing.h"
-#include "Blaster/Characters/BlasterCharacter.h"
+#include "Blaster/Character/BlasterCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"

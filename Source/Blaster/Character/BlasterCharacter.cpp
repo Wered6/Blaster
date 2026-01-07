@@ -5,8 +5,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blaster/HUD/BlasterOverheadWidget.h"
-#include "Blaster/Weapons/BlasterCombatComponent.h"
-#include "Blaster/Weapons/BlasterWeaponBase.h"
+#include "Blaster/Weapon/BlasterCombatComponent.h"
+#include "Blaster/Weapon/BlasterWeaponBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -249,6 +249,7 @@ void ABlasterCharacter::AimStop()
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::FireStart()
 {
 	if (CombatComponent)
@@ -257,6 +258,7 @@ void ABlasterCharacter::FireStart()
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::FireStop()
 {
 	if (CombatComponent)
@@ -304,7 +306,7 @@ ABlasterWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 	return CombatComponent->EquippedWeapon;
 }
 
-void ABlasterCharacter::PlayFireMontage(bool bAiming)
+void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
 {
 	if (!ensure(FireWeaponMontage))
 	{

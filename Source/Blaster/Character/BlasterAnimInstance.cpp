@@ -3,7 +3,7 @@
 
 #include "BlasterAnimInstance.h"
 #include "BlasterCharacter.h"
-#include "Blaster/Weapons/BlasterWeaponBase.h"
+#include "Blaster/Weapon/BlasterWeaponBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
