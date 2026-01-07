@@ -25,4 +25,6 @@ struct FBlasterCrosshairsPackage
 	TObjectPtr<UTexture2D> CrosshairTop;
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UTexture2D> CrosshairBottom;
+	
+	float CrosshairSpread;
 };

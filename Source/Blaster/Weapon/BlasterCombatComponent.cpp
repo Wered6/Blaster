@@ -14,7 +14,7 @@
 
 UBlasterCombatComponent::UBlasterCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	BaseWalkSpeed = 600.f;
 	AimWalkSpeed = 450.f;
@@ -40,6 +40,13 @@ void UBlasterCombatComponent::BeginPlay()
 	}
 
 	BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+}
+
+void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	SetCrosshairsSpread(DeltaTime);
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
@@ -138,6 +145,33 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) c
 			ECC_Visibility
 		);
 	}
+}
+
+void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
+{
+	if (!EquippedWeapon)
+	{
+		return;
+	}
+
+	// Calculate crosshair spread
+	const FVector2D WalkSpeedRange(0.f, BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed);
+	const FVector2D VelocityMultiplierRange(0.f, 1.f);
+	FVector Velocity{BlasterCharacter->GetVelocity()};
+	Velocity.Z = 0.f;
+
+	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
+
+	if (BlasterCharacter->GetCharacterMovement()->IsFalling())
+	{
+		CrosshairAirborneFactor = FMath::FInterpTo(CrosshairAirborneFactor, 2.25f, DeltaTime, 2.25f);
+	}
+	else
+	{
+		CrosshairAirborneFactor = FMath::FInterpTo(CrosshairAirborneFactor, 0.f, DeltaTime, 30.f);
+	}
+
+	BlasterHUD->SetCrosshairSpread(CrosshairVelocityFactor + CrosshairAirborneFactor);
 }
 
 void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)

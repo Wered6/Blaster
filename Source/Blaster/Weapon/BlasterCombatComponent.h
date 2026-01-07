@@ -27,6 +27,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
 protected:
@@ -65,4 +67,14 @@ private:
 	float AimWalkSpeed;
 
 	bool bFireButtonPressed;
+
+#pragma region Crosshairs
+
+private:
+	void SetCrosshairsSpread(const float DeltaTime);
+	
+	float CrosshairVelocityFactor;
+	float CrosshairAirborneFactor;
+
+#pragma endregion
 };

@@ -17,14 +17,22 @@ class BLASTER_API ABlasterHUD : public AHUD
 
 public:
 	virtual void DrawHUD() override;
-		
+
 	FORCEINLINE void SetCrosshairsPackage(const FBlasterCrosshairsPackage& Package)
 	{
 		CrosshairsPackage = Package;
 	}
 
+	FORCEINLINE void SetCrosshairSpread(const float Spread)
+	{
+		CrosshairsPackage.CrosshairSpread = Spread;
+	}
+
 private:
-	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter);
-	
+	void DrawCrosshair(UTexture2D* Texture, const FVector2D ViewportCenter, const FVector2D Spread);
+
 	FBlasterCrosshairsPackage CrosshairsPackage;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Crosshair")
+	float CrosshairSpreadMax{16.f};
 };
