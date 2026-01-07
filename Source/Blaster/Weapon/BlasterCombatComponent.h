@@ -27,8 +27,6 @@ public:
 
 	virtual void BeginPlay() override;
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
 protected:
@@ -50,13 +48,11 @@ protected:
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult) const;
 
-	void SetHUDCrosshairs(float DeltaTime);
-
 private:
 	TWeakObjectPtr<ABlasterCharacter> BlasterCharacter;
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
 	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
-	
+
 	UPROPERTY(ReplicatedUsing=OnRep_EquippedWeapon)
 	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
 

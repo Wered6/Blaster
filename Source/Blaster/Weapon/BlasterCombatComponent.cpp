@@ -14,7 +14,7 @@
 
 UBlasterCombatComponent::UBlasterCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	BaseWalkSpeed = 600.f;
 	AimWalkSpeed = 450.f;
@@ -42,21 +42,14 @@ void UBlasterCombatComponent::BeginPlay()
 	BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
 }
 
-void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	SetHUDCrosshairs(DeltaTime);
-}
-
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
-	ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
-
 	if (!Weapon)
 	{
 		return;
 	}
+
+	ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
 
 	EquippedWeapon = Weapon;
 	EquippedWeapon->SetWeaponState(EBlasterWeaponState::Equipped);
@@ -71,8 +64,9 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 
 	BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
 	BlasterCharacterRaw->bUseControllerRotationYaw = true;
-}
 
+	BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+}
 
 void UBlasterCombatComponent::SetAiming(const bool bInAiming)
 {
@@ -118,10 +112,7 @@ void UBlasterCombatComponent::FireStop()
 void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) const
 {
 	FVector2D ViewportSize;
-	if (GEngine && GEngine->GameViewport)
-	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-	}
+	GEngine->GameViewport->GetViewportSize(ViewportSize);
 
 	const FVector2D CrosshairLocation(ViewportSize / 2.f);
 	FVector CrosshairWorldPosition;
@@ -147,11 +138,6 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) c
 			ECC_Visibility
 		);
 	}
-}
-
-void UBlasterCombatComponent::SetHUDCrosshairs(float DeltaTime)
-{
-	FBlasterCrosshairsPackage CrosshairPackage{EquippedWeapon ? EquippedWeapon->GetCrosshairsPackage() : FBlasterCrosshairsPackage()};
 }
 
 void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)

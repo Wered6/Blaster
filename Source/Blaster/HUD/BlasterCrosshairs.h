@@ -10,6 +10,11 @@ struct FBlasterCrosshairsPackage
 {
 	GENERATED_BODY()
 
+	bool AreValid() const
+	{
+		return CrosshairCenter && CrosshairLeft && CrosshairRight && CrosshairTop && CrosshairBottom;
+	}
+
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UTexture2D> CrosshairCenter;
 	UPROPERTY(EditDefaultsOnly)
