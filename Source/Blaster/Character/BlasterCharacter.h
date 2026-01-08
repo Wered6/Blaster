@@ -122,6 +122,8 @@ public:
 	ABlasterWeaponBase* GetEquippedWeapon() const;
 	
 	void PlayFireMontage(const bool bAiming) const;
+	
+	FVector GetHitTargetLocation() const;
 
 private:
 	UFUNCTION()

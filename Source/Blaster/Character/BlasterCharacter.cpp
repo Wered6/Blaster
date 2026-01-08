@@ -324,6 +324,11 @@ void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
+FVector ABlasterCharacter::GetHitTargetLocation() const
+{
+	return CombatComponent->HitTargetLocation;
+}
+
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon)

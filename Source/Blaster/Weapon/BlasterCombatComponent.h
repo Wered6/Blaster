@@ -67,6 +67,8 @@ private:
 	float AimWalkSpeed;
 
 	bool bFireButtonPressed;
+	
+	FVector HitTargetLocation;
 
 #pragma region Crosshairs
 

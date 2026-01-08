@@ -33,7 +33,6 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	bWeaponEquipped = BlasterCharacter->IsWeaponEquipped();
 	EquippedWeapon = BlasterCharacter->GetEquippedWeapon();
-	const ABlasterWeaponBase* EquippedWeaponRaw = EquippedWeapon.Get();
 
 	bAirborne = BlasterCharacter->GetCharacterMovement()->IsFalling();
 	bAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
@@ -58,13 +57,32 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	YawAimOffset = BlasterCharacter->GetYawAimOffest();
 	PitchAimOffset = BlasterCharacter->GetPitchAimOffset();
 
-	if (bWeaponEquipped && EquippedWeaponRaw && EquippedWeaponRaw->GetWeaponMeshComponent() && BlasterCharacter->GetMesh())
+	const USkeletalMeshComponent* CharacterMeshComponent{BlasterCharacter->GetMesh()};
+	if (bWeaponEquipped)
 	{
-		LeftHandTransform = EquippedWeaponRaw->GetWeaponMeshComponent()->GetSocketTransform(FName("LeftHandSocket"), RTS_World);
+		LeftHandTransform = EquippedWeapon->GetWeaponMeshComponent()->GetSocketTransform(FName("LeftHandSocket"), RTS_World);
+		
 		FVector OutPosition;
 		FRotator OutRotation;
-		BlasterCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+		CharacterMeshComponent->TransformToBoneSpace(
+			FName("hand_r"),
+			LeftHandTransform.GetLocation(),
+			FRotator::ZeroRotator,
+			OutPosition,
+			OutRotation
+		);
+		
 		LeftHandTransform.SetLocation(OutPosition);
 		LeftHandTransform.SetRotation(FQuat(OutRotation));
+
+		if (BlasterCharacter->IsLocallyControlled())
+		{
+			bLocallyControlled = true;
+
+			const FTransform RightHandTransform{CharacterMeshComponent->GetSocketTransform(FName("hand_r"), RTS_World)};
+			const FVector RightHandLocation{RightHandTransform.GetLocation()};
+			const FVector TargetLocation{RightHandLocation + (RightHandLocation - BlasterCharacter->GetHitTargetLocation())};
+			RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandLocation, TargetLocation);
+		}
 	}
 }

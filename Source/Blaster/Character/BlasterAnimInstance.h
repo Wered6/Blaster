@@ -22,6 +22,21 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+#pragma region Player
+
+public:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	bool IsLocallyControlled() const
+	{
+		return bLocallyControlled;
+	}
+
+private:
+	UPROPERTY(BlueprintGetter=IsLocallyControlled, Category="Blaster|Player")
+	bool bLocallyControlled;
+
+#pragma endregion
+
 #pragma region Weapon
 
 protected:
@@ -31,9 +46,18 @@ protected:
 		return bWeaponEquipped;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FRotator GetRightHandRotation() const
+	{
+		return RightHandRotation;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=IsWeaponEquipped, Category="Blaster|Weapon")
 	bool bWeaponEquipped{};
+
+	UPROPERTY(BlueprintGetter=GetRightHandRotation, Category="Blaster|Weapon")
+	FRotator RightHandRotation;
 
 	TWeakObjectPtr<ABlasterWeaponBase> EquippedWeapon;
 

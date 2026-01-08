@@ -33,20 +33,32 @@ void UBlasterCombatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	BlasterPlayerController = Cast<ABlasterPlayerController>(BlasterCharacter->GetController());
-	if (!ensureMsgf(BlasterPlayerController.Get(), TEXT("Probably BlasterPlayerController is not set in Game Mode")))
-	{
-		return;
-	}
 
-	BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+	if (BlasterCharacter->IsLocallyControlled())
+	{
+		BlasterPlayerController = Cast<ABlasterPlayerController>(BlasterCharacter->GetController());
+		if (!ensureMsgf(BlasterPlayerController.Get(), TEXT("Probably BlasterPlayerController is not set in Game Mode")))
+		{
+			return;
+		}
+
+		BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+	}
 }
 
 void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	SetCrosshairsSpread(DeltaTime);
+	if (BlasterCharacter->IsLocallyControlled())
+	{
+		SetCrosshairsSpread(DeltaTime);
+
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+
+		HitTargetLocation = HitResult.ImpactPoint;
+	}
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
@@ -71,8 +83,10 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 
 	BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
 	BlasterCharacterRaw->bUseControllerRotationYaw = true;
-
-	BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+	if (BlasterCharacter->IsLocallyControlled())
+	{
+		BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+	}
 }
 
 void UBlasterCombatComponent::SetAiming(const bool bInAiming)
