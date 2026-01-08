@@ -112,6 +112,10 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 
 		BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
 		BlasterCharacterRaw->bUseControllerRotationYaw = true;
+		if (BlasterCharacterRaw->IsLocallyControlled())
+		{
+			BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+		}
 	}
 }
 

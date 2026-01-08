@@ -67,7 +67,7 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	// on the server, pawns that are NOT controlled by the host
-	// doesn't need check for Authority because PossessBy is getting called only on server
+	// doesn't need check for Authority because PossessedBy is getting called only on server
 	if (!IsLocallyControlled())
 	{
 		ShowPlayerName();
