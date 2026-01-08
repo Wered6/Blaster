@@ -35,11 +35,6 @@ public:
 
 	void SetWeaponState(const EBlasterWeaponState State);
 
-	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const
-	{
-		return WeaponMeshComponent;
-	}
-
 	virtual void Fire(const FVector& HitTargetLocation);
 
 protected:
@@ -65,20 +60,32 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_WeaponState, VisibleAnywhere, Category="Blaster|Weapon Properties")
 	EBlasterWeaponState WeaponState;
 
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Weapon Properties")
-	TObjectPtr<USkeletalMeshComponent> WeaponMeshComponent;
-
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Weapon Properties")
-	TObjectPtr<USphereComponent> AreaSphereComponent;
-
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Weapon Properties")
-	TObjectPtr<UWidgetComponent> PickUpWidgetComponent;
-
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
 	TObjectPtr<UAnimationAsset> FireAnimation;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
 	TSubclassOf<ABlasterCasing> CasingClass;
+
+#pragma region Zoom
+
+public:
+	FORCEINLINE float GetZoomedFOV() const
+	{
+		return ZoomedFOV;
+	}
+
+	FORCEINLINE float GetZoomInterpSpeed() const
+	{
+		return ZoomInterpSpeed;
+	}
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Zoom")
+	float ZoomedFOV{30.f};
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Zoom")
+	float ZoomInterpSpeed{20.f};
+
+#pragma endregion
 
 #pragma region Crosshairs
 
@@ -94,6 +101,24 @@ private:
 	 */
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Crosshairs")
 	FBlasterCrosshairsPackage CrosshairsPackage;
+
+#pragma endregion
+
+#pragma region Components
+
+public:
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const
+	{
+		return WeaponMeshComponent;
+	}
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USkeletalMeshComponent> WeaponMeshComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USphereComponent> AreaSphereComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> PickUpWidgetComponent;
 
 #pragma endregion
 };

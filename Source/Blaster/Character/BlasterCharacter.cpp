@@ -113,18 +113,6 @@ void ABlasterCharacter::OnRep_PlayerState()
 	ShowPlayerName();
 }
 
-void ABlasterCharacter::Jump()
-{
-	if (bIsCrouched)
-	{
-		UnCrouch();
-	}
-	else
-	{
-		Super::Jump();
-	}
-}
-
 void ABlasterCharacter::ShowPlayerName() const
 {
 	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
@@ -264,6 +252,18 @@ void ABlasterCharacter::FireStop()
 	if (CombatComponent)
 	{
 		CombatComponent->FireStop();
+	}
+}
+
+void ABlasterCharacter::Jump()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Super::Jump();
 	}
 }
 

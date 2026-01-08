@@ -38,16 +38,13 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	virtual void PossessedBy(AController* NewController) override;
-	
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void OnRep_PlayerState() override;
 
-protected:
-	virtual void Jump() override;
-	
 private:
 	void ShowPlayerName() const;
 
@@ -65,6 +62,7 @@ private:
 	void AimStop();
 	void FireStart();
 	void FireStop();
+	virtual void Jump() override;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -86,32 +84,6 @@ private:
 
 #pragma endregion
 
-#pragma region Camera
-
-private:
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Camera")
-	TObjectPtr<USpringArmComponent> SpringArmComponent;
-
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Camera")
-	TObjectPtr<UCameraComponent> CameraComponent;
-
-#pragma endregion
-
-#pragma region HUD
-
-protected:
-	UFUNCTION(BlueprintPure)
-	UWidgetComponent* GetOverheadWidgetComponent() const
-	{
-		return OverheadWidgetComponent;
-	}
-
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetOverheadWidgetComponent, Category="Blaster|HUD")
-	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;
-
-#pragma endregion
-
 #pragma region Combat
 
 public:
@@ -120,9 +92,9 @@ public:
 	bool IsAiming() const;
 
 	ABlasterWeaponBase* GetEquippedWeapon() const;
-	
+
 	void PlayFireMontage(const bool bAiming) const;
-	
+
 	FVector GetHitTargetLocation() const;
 
 private:
@@ -135,11 +107,8 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_OverlappingWeapon)
 	TObjectPtr<ABlasterWeaponBase> OverlappingWeapon;
 
-	UPROPERTY(VisibleAnywhere, Category="Blaster|Combat")
-	TObjectPtr<UBlasterCombatComponent> CombatComponent;
-
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Combat")
-	TObjectPtr<UAnimMontage> FireWeaponMontage; 
+	TObjectPtr<UAnimMontage> FireWeaponMontage;
 
 #pragma endregion
 
@@ -166,13 +135,33 @@ protected:
 
 private:
 	void TurnInPlace(float DeltaTime);
-	
+
 	float YawAimOffest;
 	float InterpYawAimOffset;
 	float PitchAimOffset;
 	FRotator StartingAimRotation;
 
 	ETurningInPlace TurningInPlace;
+
+#pragma endregion
+
+#pragma region Components
+
+public:
+	FORCEINLINE UCameraComponent* GetCameraComponent() const
+	{
+		return CameraComponent;
+	}
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent> CameraComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UBlasterCombatComponent> CombatComponent;
 
 #pragma endregion
 };

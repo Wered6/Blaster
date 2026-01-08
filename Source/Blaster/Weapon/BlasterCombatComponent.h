@@ -67,14 +67,28 @@ private:
 	float AimWalkSpeed;
 
 	bool bFireButtonPressed;
-	
+
 	FVector HitTargetLocation;
+
+#pragma region Zoom
+
+private:
+	void InterpFOV(const float DeltaTime);
+	
+	float DefaultFOV;
+	float CurrentFOV;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Zoom")
+	float ZoomedFOV{30.f};
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Zoom")
+	float ZoomInterpSpeed{20.f};
+
+#pragma endregion
 
 #pragma region Crosshairs
 
 private:
 	void SetCrosshairsSpread(const float DeltaTime);
-	
+
 	float CrosshairVelocityFactor;
 	float CrosshairAirborneFactor;
 
