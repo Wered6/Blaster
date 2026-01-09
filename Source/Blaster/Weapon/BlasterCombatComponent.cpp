@@ -60,7 +60,7 @@ void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
 		HitTargetLocation = HitResult.ImpactPoint;
-		
+
 		InterpFOV(DeltaTime);
 	}
 }
@@ -127,10 +127,17 @@ void UBlasterCombatComponent::FireStart()
 {
 	bFireButtonPressed = true;
 
+	if (!EquippedWeapon)
+	{
+		return;;
+	}
+
 	FHitResult HitResult;
 	TraceUnderCrosshairs(HitResult);
 
 	Server_Fire(HitResult.ImpactPoint);
+
+	CrosshairShootingFactor = 0.75f;
 }
 
 void UBlasterCombatComponent::FireStop()
@@ -212,7 +219,25 @@ void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
 		CrosshairAirborneFactor = FMath::FInterpTo(CrosshairAirborneFactor, 0.f, DeltaTime, 30.f);
 	}
 
-	BlasterHUD->SetCrosshairSpread(CrosshairVelocityFactor + CrosshairAirborneFactor);
+	if (bAiming)
+	{
+		CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.58f, DeltaTime, 30.f);
+	}
+	else
+	{
+		CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 30.f);
+	}
+
+	CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);
+
+	const float CrosshairSpread{
+		0.5f +
+		CrosshairVelocityFactor +
+		CrosshairAirborneFactor -
+		CrosshairAimFactor +
+		CrosshairShootingFactor
+	};
+	BlasterHUD->SetCrosshairSpread(CrosshairSpread);
 }
 
 void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
@@ -222,11 +247,6 @@ void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuanti
 
 void UBlasterCombatComponent::Multicast_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
 {
-	if (!EquippedWeapon)
-	{
-		return;
-	}
-
 	BlasterCharacter->PlayFireMontage(bAiming);
 	EquippedWeapon->Fire(TraceHitTargetLocation);
 }

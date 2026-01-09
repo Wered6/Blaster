@@ -91,6 +91,8 @@ private:
 
 	float CrosshairVelocityFactor;
 	float CrosshairAirborneFactor;
+	float CrosshairAimFactor;
+	float CrosshairShootingFactor;
 
 #pragma endregion
 };
