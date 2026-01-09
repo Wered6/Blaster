@@ -49,6 +49,16 @@ public:
 private:
 	void ShowPlayerName() const;
 
+#pragma region Camera
+
+private:
+	void HideCameraIfCameraClose() const;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Camera")
+	float CameraThreshold{200.f};
+
+#pragma endregion
+	
 #pragma region Input
 
 public:

@@ -104,6 +104,7 @@ void ABlasterCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	AimOffset(DeltaSeconds);
+	HideCameraIfCameraClose();
 }
 
 void ABlasterCharacter::OnRep_PlayerState()
@@ -123,6 +124,22 @@ void ABlasterCharacter::ShowPlayerName() const
 	}
 
 	BlasterOverheadWidget->ShowPlayerName(this);
+}
+
+void ABlasterCharacter::HideCameraIfCameraClose() const
+{
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	const float CameraToCharacterDistance = (CameraComponent->GetComponentLocation() - GetActorLocation()).Size();
+	const bool bCharacterHidden = CameraToCharacterDistance < CameraThreshold;
+	GetMesh()->SetVisibility(!bCharacterHidden);
+	if (CombatComponent->EquippedWeapon)
+	{
+		CombatComponent->EquippedWeapon->GetWeaponMeshComponent()->bOwnerNoSee = bCharacterHidden;
+	}
 }
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

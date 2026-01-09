@@ -164,7 +164,10 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) c
 
 	if (bScreenToWorld)
 	{
-		const FVector Start{CrosshairWorldPosition};
+		FVector Start{CrosshairWorldPosition};
+		const float DistanceToCharacter = (BlasterCharacter->GetActorLocation() - Start).Size();
+		Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
+		
 		const FVector End{Start + CrosshairWorldDirection * TRACE_LENGTH};
 
 		GetWorld()->LineTraceSingleByChannel(
