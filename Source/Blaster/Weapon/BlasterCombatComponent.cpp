@@ -129,7 +129,7 @@ void UBlasterCombatComponent::FireStart()
 
 	if (!EquippedWeapon)
 	{
-		return;;
+		return;
 	}
 
 	FHitResult HitResult;
@@ -145,7 +145,7 @@ void UBlasterCombatComponent::FireStop()
 	bFireButtonPressed = false;
 }
 
-void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) const
+void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 {
 	FVector2D ViewportSize;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
@@ -167,7 +167,7 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) c
 		FVector Start{CrosshairWorldPosition};
 		const float DistanceToCharacter = (BlasterCharacter->GetActorLocation() - Start).Size();
 		Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
-		
+
 		const FVector End{Start + CrosshairWorldDirection * TRACE_LENGTH};
 
 		GetWorld()->LineTraceSingleByChannel(
@@ -176,14 +176,10 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) c
 			End,
 			ECC_Visibility
 		);
-		if (Cast<IBlasterInteractWithCrosshairsInterface>(TraceHitResult.GetActor()))
-		{
-			BlasterHUD->SetCrosshairsColor(FLinearColor::Red);
-		}
-		else
-		{
-			BlasterHUD->SetCrosshairsColor(FLinearColor::White);
-		}
+
+		TargetActor = Cast<IBlasterInteractWithCrosshairsInterface>(TraceHitResult.GetActor());
+
+		BlasterHUD->SetCrosshairsColor(TargetActor ? FLinearColor::Red : FLinearColor::White);
 	}
 }
 
@@ -230,23 +226,17 @@ void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
 		CrosshairAirborneFactor = FMath::FInterpTo(CrosshairAirborneFactor, 0.f, DeltaTime, 30.f);
 	}
 
-	if (bAiming)
-	{
-		CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.58f, DeltaTime, 30.f);
-	}
-	else
-	{
-		CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 30.f);
-	}
-
+	CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, bAiming ? 0.4f : 0.f, DeltaTime, 30.f);
 	CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);
+	CrosshairAimAtPlayerFactor = FMath::FInterpTo(CrosshairAimAtPlayerFactor, TargetActor ? 0.3f : 0.f, DeltaTime, 30.f);
 
 	const float CrosshairSpread{
-		0.5f +
+		0.6f +
 		CrosshairVelocityFactor +
 		CrosshairAirborneFactor -
 		CrosshairAimFactor +
-		CrosshairShootingFactor
+		CrosshairShootingFactor -
+		CrosshairAimAtPlayerFactor
 	};
 	BlasterHUD->SetCrosshairsSpread(CrosshairSpread);
 }

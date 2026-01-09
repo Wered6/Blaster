@@ -8,6 +8,7 @@
 
 #define TRACE_LENGTH 80000.f
 
+class IBlasterInteractWithCrosshairsInterface;
 class ABlasterHUD;
 class ABlasterPlayerController;
 class ABlasterCharacter;
@@ -48,7 +49,7 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Fire(const FVector_NetQuantize& TraceHitTargetLocation);
 
-	void TraceUnderCrosshairs(FHitResult& TraceHitResult) const;
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
 private:
 	TWeakObjectPtr<ABlasterCharacter> BlasterCharacter;
@@ -70,11 +71,13 @@ private:
 
 	FVector HitTargetLocation;
 
+	IBlasterInteractWithCrosshairsInterface* TargetActor;
+
 #pragma region Zoom
 
 private:
 	void InterpFOV(const float DeltaTime);
-	
+
 	float DefaultFOV;
 	float CurrentFOV;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Zoom")
@@ -93,6 +96,7 @@ private:
 	float CrosshairAirborneFactor;
 	float CrosshairAimFactor;
 	float CrosshairShootingFactor;
+	float CrosshairAimAtPlayerFactor;
 
 #pragma endregion
 };
