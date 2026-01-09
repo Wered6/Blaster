@@ -4,6 +4,7 @@
 #include "BlasterCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blaster/Blaster.h"
 #include "Blaster/HUD/BlasterOverheadWidget.h"
 #include "Blaster/Weapon/BlasterCombatComponent.h"
 #include "Blaster/Weapon/BlasterWeaponBase.h"
@@ -41,6 +42,7 @@ ABlasterCharacter::ABlasterCharacter()
 	CombatComponent->SetIsReplicated(true);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
@@ -324,13 +326,17 @@ ABlasterWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 	return CombatComponent->EquippedWeapon;
 }
 
+void ABlasterCharacter::Multicast_Hit_Implementation()
+{
+	PlayHitReactMontage();
+}
+
 void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
 {
 	if (!ensure(FireWeaponMontage))
 	{
 		return;
 	}
-
 	if (!CombatComponent->EquippedWeapon)
 	{
 		return;
@@ -339,6 +345,23 @@ void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
 	UAnimInstance* AnimInstance{GetMesh()->GetAnimInstance()};
 	AnimInstance->Montage_Play(FireWeaponMontage);
 	const FName SectionName = FName(bAiming ? "RifleAim" : "RifleHip");
+	AnimInstance->Montage_JumpToSection(SectionName);
+}
+
+void ABlasterCharacter::PlayHitReactMontage() const
+{
+	if (!ensure(HitReactMontage))
+	{
+		return;
+	}
+	if (!CombatComponent->EquippedWeapon)
+	{
+		return;
+	}
+
+	UAnimInstance* AnimInstance{GetMesh()->GetAnimInstance()};
+	AnimInstance->Montage_Play(HitReactMontage);
+	const FName SectionName{"FromFront"};
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 

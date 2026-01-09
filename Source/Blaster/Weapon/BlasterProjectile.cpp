@@ -2,6 +2,9 @@
 
 
 #include "BlasterProjectile.h"
+
+#include "Blaster/Blaster.h"
+#include "Blaster/Character/BlasterCharacter.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -18,11 +21,10 @@ ABlasterProjectile::ABlasterProjectile()
 	SetRootComponent(CollisionBoxComponent);
 	CollisionBoxComponent->SetCollisionObjectType(ECC_WorldDynamic);
 	CollisionBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	FCollisionResponseContainer ResponseContainer;
-	ResponseContainer.SetAllChannels(ECR_Ignore);
-	ResponseContainer.SetResponse(ECC_Visibility, ECR_Block);
-	ResponseContainer.SetResponse(ECC_WorldStatic, ECR_Block);
-	CollisionBoxComponent->SetCollisionResponseToChannels(ResponseContainer);
+	CollisionBoxComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CollisionBoxComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	CollisionBoxComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	CollisionBoxComponent->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECR_Block);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
@@ -47,6 +49,12 @@ void ABlasterProjectile::OnHit(UPrimitiveComponent* HitComponent,
                                FVector NormalImpulse,
                                const FHitResult& Hit)
 {
+	ABlasterCharacter* BlasterCharacter{Cast<ABlasterCharacter>(OtherActor)};
+	if (BlasterCharacter)
+	{
+		BlasterCharacter->Multicast_Hit();
+	}
+
 	Destroy();
 }
 

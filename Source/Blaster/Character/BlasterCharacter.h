@@ -53,12 +53,12 @@ private:
 
 private:
 	void HideCameraIfCameraClose() const;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Camera")
 	float CameraThreshold{200.f};
 
 #pragma endregion
-	
+
 #pragma region Input
 
 public:
@@ -104,11 +104,16 @@ public:
 
 	ABlasterWeaponBase* GetEquippedWeapon() const;
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_Hit();
+
 	void PlayFireMontage(const bool bAiming) const;
 
 	FVector GetHitTargetLocation() const;
 
 private:
+	void PlayHitReactMontage() const;
+
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon);
 
@@ -120,6 +125,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Combat")
 	TObjectPtr<UAnimMontage> FireWeaponMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 
 #pragma endregion
 
