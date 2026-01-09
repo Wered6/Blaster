@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blaster/Weapon/BlasterInteractWithCrosshairsInterface.h"
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
@@ -27,7 +28,7 @@ enum class ETurningInPlace : uint8
 };
 
 UCLASS()
-class BLASTER_API ABlasterCharacter : public ACharacter
+class BLASTER_API ABlasterCharacter : public ACharacter, public IBlasterInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 

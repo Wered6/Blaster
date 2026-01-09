@@ -173,6 +173,14 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult) c
 			End,
 			ECC_Visibility
 		);
+		if (Cast<IBlasterInteractWithCrosshairsInterface>(TraceHitResult.GetActor()))
+		{
+			BlasterHUD->SetCrosshairsColor(FLinearColor::Red);
+		}
+		else
+		{
+			BlasterHUD->SetCrosshairsColor(FLinearColor::White);
+		}
 	}
 }
 
@@ -237,7 +245,7 @@ void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
 		CrosshairAimFactor +
 		CrosshairShootingFactor
 	};
-	BlasterHUD->SetCrosshairSpread(CrosshairSpread);
+	BlasterHUD->SetCrosshairsSpread(CrosshairSpread);
 }
 
 void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)

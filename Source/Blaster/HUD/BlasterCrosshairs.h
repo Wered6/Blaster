@@ -27,4 +27,6 @@ struct FBlasterCrosshairsPackage
 	TObjectPtr<UTexture2D> CrosshairBottom;
 	
 	float CrosshairSpread;
+	
+	FLinearColor CrosshairColor;
 };

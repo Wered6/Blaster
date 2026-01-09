@@ -23,13 +23,18 @@ public:
 		CrosshairsPackage = Package;
 	}
 
-	FORCEINLINE void SetCrosshairSpread(const float Spread)
+	FORCEINLINE void SetCrosshairsSpread(const float Spread)
 	{
 		CrosshairsPackage.CrosshairSpread = Spread;
 	}
 
+	FORCEINLINE void SetCrosshairsColor(const FLinearColor CrosshairsColor)
+	{
+		CrosshairsPackage.CrosshairColor = CrosshairsColor;
+	}
+
 private:
-	void DrawCrosshair(UTexture2D* Texture, const FVector2D ViewportCenter, const FVector2D Spread);
+	void DrawCrosshair(UTexture2D* Texture, const FVector2D ViewportCenter, const FVector2D Spread, FLinearColor CrosshairsColor);
 
 	FBlasterCrosshairsPackage CrosshairsPackage;
 
