@@ -93,20 +93,6 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	}
 }
 
-void UBlasterCombatComponent::SetAiming(const bool bInAiming)
-{
-	bAiming = bInAiming;
-	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
-
-	Server_SetAiming(bInAiming);
-}
-
-void UBlasterCombatComponent::Server_SetAiming_Implementation(const bool bInAiming)
-{
-	bAiming = bInAiming;
-	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
-}
-
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UBlasterCombatComponent::OnRep_EquippedWeapon()
 {
@@ -125,24 +111,88 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 
 void UBlasterCombatComponent::FireStart()
 {
-	bFireButtonPressed = true;
-
 	if (!EquippedWeapon)
 	{
 		return;
 	}
 
-	FHitResult HitResult;
-	TraceUnderCrosshairs(HitResult);
-
-	Server_Fire(HitResult.ImpactPoint);
-
-	CrosshairShootingFactor = 0.75f;
+	bFireButtonPressed = true;
+	Fire();
 }
 
 void UBlasterCombatComponent::FireStop()
 {
 	bFireButtonPressed = false;
+}
+
+void UBlasterCombatComponent::Fire()
+{
+	if (bCanFire)
+	{
+		bCanFire = false;
+		Server_Fire(HitTargetLocation);
+		CrosshairShootingFactor = 0.75f;
+		StartFireTimer();
+	}
+}
+
+void UBlasterCombatComponent::StartFireTimer()
+{
+	GetWorld()->GetTimerManager().SetTimer(FireTimer, this, &UBlasterCombatComponent::OnFireTimerCompleted, EquippedWeapon->GetFireDelay());
+}
+
+void UBlasterCombatComponent::OnFireTimerCompleted()
+{
+	bCanFire = true;
+	if (bFireButtonPressed && EquippedWeapon->IsAutomatic())
+	{
+		Fire();
+	}
+}
+
+void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
+{
+	Multicast_Fire(TraceHitTargetLocation);
+}
+
+void UBlasterCombatComponent::Multicast_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
+{
+	BlasterCharacter->PlayFireMontage(bAiming);
+	EquippedWeapon->Fire(TraceHitTargetLocation);
+}
+
+void UBlasterCombatComponent::SetAiming(const bool bInAiming)
+{
+	bAiming = bInAiming;
+	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
+
+	Server_SetAiming(bInAiming);
+}
+
+void UBlasterCombatComponent::Server_SetAiming_Implementation(const bool bInAiming)
+{
+	bAiming = bInAiming;
+	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
+}
+
+
+void UBlasterCombatComponent::InterpFOV(const float DeltaTime)
+{
+	if (!EquippedWeapon)
+	{
+		return;
+	}
+
+	if (bAiming)
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
+	}
+	else
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);
+	}
+
+	BlasterCharacter->GetCameraComponent()->SetFieldOfView(CurrentFOV);
 }
 
 void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
@@ -183,25 +233,6 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 	}
 }
 
-void UBlasterCombatComponent::InterpFOV(const float DeltaTime)
-{
-	if (!EquippedWeapon)
-	{
-		return;
-	}
-
-	if (bAiming)
-	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
-	}
-	else
-	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);
-	}
-
-	BlasterCharacter->GetCameraComponent()->SetFieldOfView(CurrentFOV);
-}
-
 void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
 {
 	if (!EquippedWeapon)
@@ -239,15 +270,4 @@ void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
 		CrosshairAimAtPlayerFactor
 	};
 	BlasterHUD->SetCrosshairsSpread(CrosshairSpread);
-}
-
-void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
-{
-	Multicast_Fire(TraceHitTargetLocation);
-}
-
-void UBlasterCombatComponent::Multicast_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
-{
-	BlasterCharacter->PlayFireMontage(bAiming);
-	EquippedWeapon->Fire(TraceHitTargetLocation);
 }

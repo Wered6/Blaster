@@ -30,48 +30,69 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	TWeakObjectPtr<ABlasterCharacter> BlasterCharacter;
+	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
+	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
+
+#pragma region Weapon
+
+public:
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
 
-protected:
-	void SetAiming(const bool bInAiming);
-
-	UFUNCTION(Server, Reliable)
-	void Server_SetAiming(const bool bInAiming);
-
+private:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	UPROPERTY(ReplicatedUsing=OnRep_EquippedWeapon)
+	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
+
+#pragma endregion
+
+#pragma region Movement
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
+	float BaseWalkSpeed;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
+	float AimWalkSpeed;
+
+#pragma endregion
+
+#pragma region Fire
+
+private:
 	void FireStart();
 	void FireStop();
+	void Fire();
 
 	UFUNCTION(Server, Reliable)
 	void Server_Fire(const FVector_NetQuantize& TraceHitTargetLocation);
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Fire(const FVector_NetQuantize& TraceHitTargetLocation);
 
-	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+	void StartFireTimer();
+	void OnFireTimerCompleted();
+	
+	bool bFireButtonPressed;
+	
+	FTimerHandle FireTimer;
+	
+	bool bCanFire{true};
+
+#pragma endregion
+
+#pragma region Aim
 
 private:
-	TWeakObjectPtr<ABlasterCharacter> BlasterCharacter;
-	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
-	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
-
-	UPROPERTY(ReplicatedUsing=OnRep_EquippedWeapon)
-	TObjectPtr<ABlasterWeaponBase> EquippedWeapon;
+	void SetAiming(const bool bInAiming);
+	UFUNCTION(Server, Reliable)
+	void Server_SetAiming(const bool bInAiming);
 
 	UPROPERTY(Replicated)
 	bool bAiming;
 
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
-	float BaseWalkSpeed;
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
-	float AimWalkSpeed;
-
-	bool bFireButtonPressed;
-
-	FVector HitTargetLocation;
-
-	IBlasterInteractWithCrosshairsInterface* TargetActor;
+#pragma endregion
 
 #pragma region Zoom
 
@@ -90,6 +111,7 @@ private:
 #pragma region Crosshairs
 
 private:
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	void SetCrosshairsSpread(const float DeltaTime);
 
 	float CrosshairVelocityFactor;
@@ -97,6 +119,10 @@ private:
 	float CrosshairAimFactor;
 	float CrosshairShootingFactor;
 	float CrosshairAimAtPlayerFactor;
+
+	IBlasterInteractWithCrosshairsInterface* TargetActor;
+
+	FVector HitTargetLocation;
 
 #pragma endregion
 };

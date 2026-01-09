@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BlasterCasing.h"
 #include "Blaster/HUD/BlasterCrosshairs.h"
 #include "GameFramework/Actor.h"
 #include "BlasterWeaponBase.generated.h"
@@ -35,8 +36,6 @@ public:
 
 	void SetWeaponState(const EBlasterWeaponState State);
 
-	virtual void Fire(const FVector& HitTargetLocation);
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -57,14 +56,37 @@ private:
 	UFUNCTION()
 	void OnRep_WeaponState();
 
-	UPROPERTY(ReplicatedUsing=OnRep_WeaponState, VisibleAnywhere, Category="Blaster|Weapon Properties")
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_WeaponState, Category="Blaster|Weapon Properties")
 	EBlasterWeaponState WeaponState;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
+	TSubclassOf<ABlasterCasing> CasingClass;
+
+#pragma region Fire
+
+public:
+	virtual void Fire(const FVector& HitTargetLocation);
+
+	FORCEINLINE float GetFireDelay() const
+	{
+		return FireDelay;
+	}
+	
+	FORCEINLINE bool IsAutomatic() const
+	{
+		return bAutomatic;
+	}
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Fire")
 	TObjectPtr<UAnimationAsset> FireAnimation;
 
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
-	TSubclassOf<ABlasterCasing> CasingClass;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Fire")
+	float FireDelay{.15f};
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Fire")
+	bool bAutomatic{true};
+
+#pragma endregion
 
 #pragma region Zoom
 
