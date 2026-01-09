@@ -147,6 +147,12 @@ protected:
 		return TurningInPlace;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool ShouldRotateRootBone() const
+	{
+		return bRotateRootBone;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=GetSpeed, Category="Blaster|Movement")
 	float Speed;
@@ -178,6 +184,9 @@ private:
 
 	UPROPERTY(BlueprintGetter=GetTurningInPlace, Category="Blaster|Movement")
 	ETurningInPlace TurningInPlace;
+
+	UPROPERTY(BlueprintGetter=ShouldRotateRootBone, Category="Blaster|Movement")
+	bool bRotateRootBone;
 
 #pragma endregion
 };

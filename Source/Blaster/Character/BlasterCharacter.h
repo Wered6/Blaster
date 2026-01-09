@@ -133,6 +133,8 @@ private:
 #pragma region Movement
 
 public:
+	virtual void OnRep_ReplicatedMovement() override;
+
 	FORCEINLINE float GetYawAimOffest() const
 	{
 		return YawAimOffest;
@@ -148,11 +150,20 @@ public:
 		return TurningInPlace;
 	}
 
+	FORCEINLINE bool ShouldRotateRootBone() const
+	{
+		return bRotateRootBone;
+	}
+
 protected:
 	void AimOffset(const float DeltaTime);
+	void SimProxiesTurn();
 
 private:
 	void TurnInPlace(float DeltaTime);
+
+	void CalculatePitchAimOffset();
+	float CalculateSpeed() const;
 
 	float YawAimOffest;
 	float InterpYawAimOffset;
@@ -160,6 +171,13 @@ private:
 	FRotator StartingAimRotation;
 
 	ETurningInPlace TurningInPlace;
+
+	bool bRotateRootBone;
+	float TurnThreshold{0.5f};
+	FRotator ProxyRotationLastFrame;
+	FRotator ProxyRotation;
+	float ProxyYaw;
+	float TimeSinceLastMovementReplication;
 
 #pragma endregion
 

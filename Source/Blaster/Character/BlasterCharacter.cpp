@@ -105,7 +105,20 @@ void ABlasterCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	AimOffset(DeltaSeconds);
+	if (GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
+	{
+		AimOffset(DeltaSeconds);
+	}
+	else
+	{
+		TimeSinceLastMovementReplication += DeltaSeconds;
+		if (TimeSinceLastMovementReplication > 0.25f)
+		{
+			OnRep_ReplicatedMovement();
+		}
+		CalculatePitchAimOffset();
+	}
+
 	HideCameraIfCameraClose();
 }
 
@@ -384,22 +397,28 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(ABlasterWeaponBase* LastWeapon)
 	}
 }
 
+void ABlasterCharacter::OnRep_ReplicatedMovement()
+{
+	Super::OnRep_ReplicatedMovement();
+
+	SimProxiesTurn();
+	TimeSinceLastMovementReplication = 0.f;
+}
+
 void ABlasterCharacter::AimOffset(const float DeltaTime)
 {
-	if (CombatComponent && !CombatComponent->EquippedWeapon)
+	if (!CombatComponent->EquippedWeapon)
 	{
 		return;
 	}
 
-	FVector Velocity{GetVelocity()};
-	Velocity.Z = 0.f;
-	const float Speed = Velocity.Size();
-
+	const float Speed{CalculateSpeed()};
 	const bool bAirborne{GetCharacterMovement()->IsFalling()};
 
 	// standing still, not jumping
 	if (Speed == 0.f && !bAirborne)
 	{
+		bRotateRootBone = true;
 		const FRotator CurrentAimRotation{FRotator(0.f, GetBaseAimRotation().Yaw, 0.f)};
 		const FRotator DeltaAimRotation{UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation)};
 		YawAimOffest = DeltaAimRotation.Yaw;
@@ -413,20 +432,54 @@ void ABlasterCharacter::AimOffset(const float DeltaTime)
 	// running or jumping
 	if (Speed > 0.f || bAirborne)
 	{
+		bRotateRootBone = false;
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		YawAimOffest = 0.f;
 		bUseControllerRotationYaw = true;
 		TurningInPlace = ETurningInPlace::NotTurning;
 	}
 
-	PitchAimOffset = GetBaseAimRotation().Pitch;
-	if (!IsLocallyControlled() && PitchAimOffset > 90.f)
+	CalculatePitchAimOffset();
+}
+
+void ABlasterCharacter::SimProxiesTurn()
+{
+	if (!CombatComponent->EquippedWeapon)
 	{
-		// map pitch from [270, 360) to [-90, 0)
-		const FVector2D InRange(270.f, 360.f);
-		const FVector2D OutRange(-90.f, 0.f);
-		PitchAimOffset = FMath::GetMappedRangeValueClamped(InRange, OutRange, PitchAimOffset);
+		return;
 	}
+
+	bRotateRootBone = false;
+
+	const float Speed{CalculateSpeed()};
+	if (Speed > 0.f)
+	{
+		TurningInPlace = ETurningInPlace::NotTurning;
+		return;
+	}
+
+	ProxyRotationLastFrame = ProxyRotation;
+	ProxyRotation = GetActorRotation();
+	ProxyYaw = UKismetMathLibrary::NormalizedDeltaRotator(ProxyRotation, ProxyRotationLastFrame).Yaw;
+
+	if (FMath::Abs(ProxyYaw) > TurnThreshold)
+	{
+		if (ProxyYaw > TurnThreshold)
+		{
+			TurningInPlace = ETurningInPlace::Right;
+		}
+		else if (ProxyYaw < -TurnThreshold)
+		{
+			TurningInPlace = ETurningInPlace::Left;
+		}
+		else
+		{
+			TurningInPlace = ETurningInPlace::NotTurning;
+		}
+		return;
+	}
+
+	TurningInPlace = ETurningInPlace::NotTurning;
 }
 
 void ABlasterCharacter::TurnInPlace(float DeltaTime)
@@ -449,6 +502,26 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		}
 	}
+}
+
+void ABlasterCharacter::CalculatePitchAimOffset()
+{
+	PitchAimOffset = GetBaseAimRotation().Pitch;
+	if (PitchAimOffset > 90.f && !IsLocallyControlled())
+	{
+		// map pitch from [270, 360) to [-90, 0)
+		const FVector2D InRange(270.f, 360.f);
+		const FVector2D OutRange(-90.f, 0.f);
+		PitchAimOffset = FMath::GetMappedRangeValueClamped(InRange, OutRange, PitchAimOffset);
+	}
+}
+
+float ABlasterCharacter::CalculateSpeed() const
+{
+	FVector Velocity{GetVelocity()};
+	Velocity.Z = 0.f;
+
+	return Velocity.Size();
 }
 
 void ABlasterCharacter::Server_Equip_Implementation()
