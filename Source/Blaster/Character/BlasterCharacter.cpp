@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blaster/Blaster.h"
+#include "Blaster/Game/BlasterGameMode.h"
 #include "Blaster/HUD/BlasterOverheadWidget.h"
 #include "Blaster/Player/BlasterPlayerController.h"
 #include "Blaster/Weapon/BlasterCombatComponent.h"
@@ -147,6 +148,10 @@ void ABlasterCharacter::OnRep_PlayerState()
 	ShowPlayerName();
 }
 
+void ABlasterCharacter::Eliminate()
+{
+}
+
 void ABlasterCharacter::ShowPlayerName() const
 {
 	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
@@ -164,14 +169,23 @@ void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
                                       AController* InstigatedBy,
                                       AActor* DamageCauser)
 {
+	ABlasterPlayerController* BlasterPlayerControllerRaw{BlasterPlayerController.Get()};
+
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
 	if (IsLocallyControlled())
 	{
-		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+		BlasterPlayerControllerRaw->SetHUDHealth(Health, MaxHealth);
 	}
 
 	PlayHitReactMontage();
+
+	if (Health == 0.f)
+	{
+		ABlasterGameMode* BlasterGameMode{GetWorld()->GetAuthGameMode<ABlasterGameMode>()};
+		ABlasterPlayerController* AttackerController{Cast<ABlasterPlayerController>(InstigatedBy)};
+		BlasterGameMode->PlayerEliminated(this, BlasterPlayerControllerRaw, AttackerController);
+	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

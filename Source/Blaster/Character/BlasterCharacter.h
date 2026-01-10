@@ -37,6 +37,7 @@ public:
 	ABlasterCharacter();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	virtual void PostInitializeComponents() override;
 
 	virtual void PossessedBy(AController* NewController) override;
@@ -45,7 +46,10 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+public:
 	virtual void OnRep_PlayerState() override;
+	
+	void Eliminate();
 
 private:
 	void ShowPlayerName() const;
