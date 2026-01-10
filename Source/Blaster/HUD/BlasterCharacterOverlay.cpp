@@ -2,3 +2,25 @@
 
 
 #include "BlasterCharacterOverlay.h"
+#include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
+
+void UBlasterCharacterOverlay::SetHealthBarPercent(const float Percent) const
+{
+	if (!ensure(HealthBar))
+	{
+		return;
+	}
+
+	HealthBar->SetPercent(Percent);
+}
+
+void UBlasterCharacterOverlay::SetHealthText(const FString& HealthString) const
+{
+	if (!ensure(HealthText))
+	{
+		return;
+	}
+
+	HealthText->SetText(FText::FromString(HealthString));
+}

@@ -22,6 +22,12 @@ protected:
 
 #pragma region CharacterOverlay
 
+public:
+	FORCEINLINE UBlasterCharacterOverlay* GetCharacterOverlay() const
+	{
+		return CharacterOverlay;
+	}
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Overlay")
 	TSubclassOf<UBlasterCharacterOverlay> CharacterOverlayClass;

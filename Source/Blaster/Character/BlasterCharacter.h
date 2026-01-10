@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+class ABlasterPlayerController;
 enum class ETurningInPlace : uint8;
 class UBlasterCombatComponent;
 class ABlasterWeaponBase;
@@ -48,6 +49,8 @@ public:
 
 private:
 	void ShowPlayerName() const;
+	
+	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
 	
 #pragma region Health
 

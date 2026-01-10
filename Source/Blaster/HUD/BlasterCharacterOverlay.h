@@ -17,6 +17,10 @@ class BLASTER_API UBlasterCharacterOverlay : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	void SetHealthBarPercent(float Percent) const;
+	void SetHealthText(const FString& HealthString) const;
+	
 private:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;

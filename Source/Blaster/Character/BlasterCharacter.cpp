@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blaster/Blaster.h"
 #include "Blaster/HUD/BlasterOverheadWidget.h"
+#include "Blaster/Player/BlasterPlayerController.h"
 #include "Blaster/Weapon/BlasterCombatComponent.h"
 #include "Blaster/Weapon/BlasterWeaponBase.h"
 #include "Camera/CameraComponent.h"
@@ -95,10 +96,16 @@ void ABlasterCharacter::BeginPlay()
 		}
 	}
 
-	// on the server, pawn that is controlled by the host
-	if (HasAuthority() && IsLocallyControlled())
+	BlasterPlayerController = Cast<ABlasterPlayerController>(Controller);
+	
+	if (IsLocallyControlled())
 	{
-		ShowPlayerName();
+		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+		// on the server, pawn that is controlled by the host
+		if (HasAuthority())
+		{
+			ShowPlayerName();
+		}
 	}
 }
 
