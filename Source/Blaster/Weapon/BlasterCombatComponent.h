@@ -73,11 +73,11 @@ private:
 
 	void StartFireTimer();
 	void OnFireTimerCompleted();
-	
+
 	bool bFireButtonPressed;
-	
+
 	FTimerHandle FireTimer;
-	
+
 	bool bCanFire{true};
 
 #pragma endregion

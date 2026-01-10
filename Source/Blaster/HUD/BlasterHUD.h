@@ -7,6 +7,8 @@
 #include "GameFramework/HUD.h"
 #include "BlasterHUD.generated.h"
 
+class UBlasterCharacterOverlay;
+
 /**
  * 
  */
@@ -14,6 +16,22 @@ UCLASS()
 class BLASTER_API ABlasterHUD : public AHUD
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void BeginPlay() override;
+
+#pragma region CharacterOverlay
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Overlay")
+	TSubclassOf<UBlasterCharacterOverlay> CharacterOverlayClass;
+
+	UPROPERTY()
+	TObjectPtr<UBlasterCharacterOverlay> CharacterOverlay;
+
+#pragma endregion
+
+#pragma region Crosshairs
 
 public:
 	virtual void DrawHUD() override;
@@ -38,6 +56,8 @@ private:
 
 	FBlasterCrosshairsPackage CrosshairsPackage;
 
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Crosshair")
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Crosshairs")
 	float CrosshairSpreadMax{16.f};
+
+#pragma endregion
 };

@@ -48,6 +48,20 @@ public:
 
 private:
 	void ShowPlayerName() const;
+	
+#pragma region Health
+
+private:
+	UFUNCTION()
+	void OnRep_Health();
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Stats")
+	float MaxHealth{100.f};
+	
+	UPROPERTY(ReplicatedUsing=OnRep_Health, VisibleAnywhere, Category="Blaster|Stats")
+	float Health{100.f};
+
+#pragma endregion
 
 #pragma region Camera
 
