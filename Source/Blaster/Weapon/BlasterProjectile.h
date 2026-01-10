@@ -17,8 +17,12 @@ class BLASTER_API ABlasterProjectile : public AActor
 public:
 	ABlasterProjectile();
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	virtual void Destroyed() override;
-	
+
 protected:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComponent,
@@ -27,7 +31,8 @@ protected:
 	                   FVector NormalImpulse,
 	                   const FHitResult& Hit);
 
-	virtual void BeginPlay() override;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Damage")
+	float Damage{20.f};
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -38,7 +43,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|VFX")
 	TObjectPtr<UParticleSystem> TracerParticleSystem;
-
 	UPROPERTY()
 	TObjectPtr<UParticleSystemComponent> TracerParticleSystemComponent;
 

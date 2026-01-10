@@ -49,18 +49,25 @@ public:
 
 private:
 	void ShowPlayerName() const;
-	
+
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
-	
+
 #pragma region Health
 
 private:
 	UFUNCTION()
-	void OnRep_Health();
+	void OnDamageTaken(AActor* DamagedActor,
+	                      float Damage,
+	                      const UDamageType* DamageType,
+	                      AController* InstigatedBy,
+	                      AActor* DamageCauser);
 	
+	UFUNCTION()
+	void OnRep_Health();
+
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Stats")
 	float MaxHealth{100.f};
-	
+
 	UPROPERTY(ReplicatedUsing=OnRep_Health, VisibleAnywhere, Category="Blaster|Stats")
 	float Health{100.f};
 
@@ -120,9 +127,6 @@ public:
 	bool IsAiming() const;
 
 	ABlasterWeaponBase* GetEquippedWeapon() const;
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void Multicast_Hit();
 
 	void PlayFireMontage(const bool bAiming) const;
 

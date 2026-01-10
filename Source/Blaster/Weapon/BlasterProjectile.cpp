@@ -2,9 +2,7 @@
 
 
 #include "BlasterProjectile.h"
-
 #include "Blaster/Blaster.h"
-#include "Blaster/Character/BlasterCharacter.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -19,6 +17,7 @@ ABlasterProjectile::ABlasterProjectile()
 
 	CollisionBoxComponent = CreateDefaultSubobject<UBoxComponent>("CollisionBoxComponent");
 	SetRootComponent(CollisionBoxComponent);
+	CollisionBoxComponent->SetBoxExtent(FVector(5.f, 2.5f, 2.5f));
 	CollisionBoxComponent->SetCollisionObjectType(ECC_WorldDynamic);
 	CollisionBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionBoxComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -28,34 +27,8 @@ ABlasterProjectile::ABlasterProjectile()
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
-}
-
-void ABlasterProjectile::Destroyed()
-{
-	Super::Destroyed();
-
-	if (!ensure(ImpactParticleSystem && ImpactSound))
-	{
-		return;
-	}
-
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticleSystem, GetActorTransform());
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
-}
-
-void ABlasterProjectile::OnHit(UPrimitiveComponent* HitComponent,
-                               AActor* OtherActor,
-                               UPrimitiveComponent* OtherComp,
-                               FVector NormalImpulse,
-                               const FHitResult& Hit)
-{
-	ABlasterCharacter* BlasterCharacter{Cast<ABlasterCharacter>(OtherActor)};
-	if (BlasterCharacter)
-	{
-		BlasterCharacter->Multicast_Hit();
-	}
-
-	Destroy();
+	ProjectileMovementComponent->InitialSpeed = 15000.f;
+	ProjectileMovementComponent->MaxSpeed = 15000.f;
 }
 
 void ABlasterProjectile::BeginPlay()
@@ -80,4 +53,26 @@ void ABlasterProjectile::BeginPlay()
 	{
 		CollisionBoxComponent->OnComponentHit.AddDynamic(this, &ABlasterProjectile::OnHit);
 	}
+}
+
+void ABlasterProjectile::Destroyed()
+{
+	Super::Destroyed();
+
+	if (!ensure(ImpactParticleSystem && ImpactSound))
+	{
+		return;
+	}
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticleSystem, GetActorTransform());
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+}
+
+void ABlasterProjectile::OnHit(UPrimitiveComponent* HitComponent,
+                               AActor* OtherActor,
+                               UPrimitiveComponent* OtherComp,
+                               FVector NormalImpulse,
+                               const FHitResult& Hit)
+{
+	Destroy();
 }

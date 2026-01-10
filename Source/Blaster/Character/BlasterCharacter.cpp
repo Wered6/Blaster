@@ -96,13 +96,22 @@ void ABlasterCharacter::BeginPlay()
 		}
 	}
 
+	// null on sim proxies
 	BlasterPlayerController = Cast<ABlasterPlayerController>(Controller);
-	
-	if (IsLocallyControlled())
+
+	const bool bLocallyControlled{IsLocallyControlled()};
+
+	// all characters on server and all locally controlled characters have player controller, but we have HUD only on locally controlled ones
+	if (bLocallyControlled)
 	{
 		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
-		// on the server, pawn that is controlled by the host
-		if (HasAuthority())
+	}
+
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::OnDamageTaken);
+
+		if (bLocallyControlled)
 		{
 			ShowPlayerName();
 		}
@@ -149,8 +158,31 @@ void ABlasterCharacter::ShowPlayerName() const
 	BlasterOverheadWidget->ShowPlayerName(this);
 }
 
+void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
+                                      float Damage,
+                                      const UDamageType* DamageType,
+                                      AController* InstigatedBy,
+                                      AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+
+	if (IsLocallyControlled())
+	{
+		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+
+	PlayHitReactMontage();
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::OnRep_Health()
 {
+	if (IsLocallyControlled())
+	{
+		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+
+	PlayHitReactMontage();
 }
 
 void ABlasterCharacter::HideCameraIfCameraClose() const
@@ -349,11 +381,6 @@ ABlasterWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 	}
 
 	return CombatComponent->EquippedWeapon;
-}
-
-void ABlasterCharacter::Multicast_Hit_Implementation()
-{
-	PlayHitReactMontage();
 }
 
 void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
