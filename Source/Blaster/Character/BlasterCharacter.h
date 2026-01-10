@@ -37,7 +37,7 @@ public:
 	ABlasterCharacter();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
 	virtual void PostInitializeComponents() override;
 
 	virtual void PossessedBy(AController* NewController) override;
@@ -46,26 +46,43 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-public:
 	virtual void OnRep_PlayerState() override;
-	
-	void Eliminate();
 
 private:
 	void ShowPlayerName() const;
 
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
 
+#pragma region Elimination
+
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Eliminate();
+	void PlayEliminationMontage() const;
+
+	FORCEINLINE bool IsEliminated() const
+	{
+		return bEliminated;
+	}
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination")
+	TObjectPtr<UAnimMontage> EliminationMontage;
+
+	bool bEliminated{false};
+
+#pragma endregion
+
 #pragma region Health
 
 private:
 	UFUNCTION()
 	void OnDamageTaken(AActor* DamagedActor,
-	                      float Damage,
-	                      const UDamageType* DamageType,
-	                      AController* InstigatedBy,
-	                      AActor* DamageCauser);
-	
+	                   float Damage,
+	                   const UDamageType* DamageType,
+	                   AController* InstigatedBy,
+	                   AActor* DamageCauser);
+
 	UFUNCTION()
 	void OnRep_Health();
 

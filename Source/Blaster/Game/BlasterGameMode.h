@@ -20,5 +20,5 @@ class BLASTER_API ABlasterGameMode : public AGameMode
 public:
 	void PlayerEliminated(ABlasterCharacter* EliminatedCharacter,
 	                      ABlasterPlayerController* VictimController,
-	                      ABlasterPlayerController* AttackerController);
+	                      ABlasterPlayerController* AttackerController) const;
 };

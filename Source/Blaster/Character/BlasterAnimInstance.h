@@ -22,6 +22,21 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+#pragma region Elimination
+
+public:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	bool IsEliminated() const
+	{
+		return bEliminated;
+	}
+
+private:
+	UPROPERTY(BlueprintGetter=IsEliminated, Category="Blaster|Elimination")
+	bool bEliminated;
+
+#pragma endregion
+
 #pragma region Player
 
 public:

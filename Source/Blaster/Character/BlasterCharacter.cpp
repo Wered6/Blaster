@@ -148,8 +148,21 @@ void ABlasterCharacter::OnRep_PlayerState()
 	ShowPlayerName();
 }
 
-void ABlasterCharacter::Eliminate()
+void ABlasterCharacter::Multicast_Eliminate_Implementation()
 {
+	bEliminated = true;
+	PlayEliminationMontage();
+}
+
+void ABlasterCharacter::PlayEliminationMontage() const
+{
+	if (!ensure(EliminationMontage))
+	{
+		return;
+	}
+
+	UAnimInstance* AnimInstance{GetMesh()->GetAnimInstance()};
+	AnimInstance->Montage_Play(EliminationMontage);
 }
 
 void ABlasterCharacter::ShowPlayerName() const
