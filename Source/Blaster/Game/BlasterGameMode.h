@@ -21,4 +21,6 @@ public:
 	void PlayerEliminated(ABlasterCharacter* EliminatedCharacter,
 	                      ABlasterPlayerController* VictimController,
 	                      ABlasterPlayerController* AttackerController) const;
+	
+	void RequestRespawn(ACharacter* EliminatedCharacter, AController* VictimController);
 };

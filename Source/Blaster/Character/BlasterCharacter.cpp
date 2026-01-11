@@ -51,6 +51,8 @@ ABlasterCharacter::ABlasterCharacter()
 	TurningInPlace = ETurningInPlace::NotTurning;
 	SetNetUpdateFrequency(66.f);
 	SetMinNetUpdateFrequency(33.f);
+
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -154,6 +156,24 @@ void ABlasterCharacter::Multicast_Eliminate_Implementation()
 	PlayEliminationMontage();
 }
 
+// TODO sometimes BlasterOverheadWidget is nullptr. Investigate it
+void ABlasterCharacter::ShowPlayerName() const
+{
+	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
+	if (!ensure(BlasterOverheadWidget))
+	{
+		return;
+	}
+
+	BlasterOverheadWidget->ShowPlayerName(this);
+}
+
+void ABlasterCharacter::Eliminate()
+{
+	Multicast_Eliminate();
+	GetWorldTimerManager().SetTimer(EliminationTimer, this, &ABlasterCharacter::EliminationTimerCompleted, EliminationDelay);
+}
+
 void ABlasterCharacter::PlayEliminationMontage() const
 {
 	if (!ensure(EliminationMontage))
@@ -165,15 +185,10 @@ void ABlasterCharacter::PlayEliminationMontage() const
 	AnimInstance->Montage_Play(EliminationMontage);
 }
 
-void ABlasterCharacter::ShowPlayerName() const
+void ABlasterCharacter::EliminationTimerCompleted()
 {
-	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
-	if (!ensure(BlasterOverheadWidget))
-	{
-		return;
-	}
-
-	BlasterOverheadWidget->ShowPlayerName(this);
+	ABlasterGameMode* BlasterGameMode{GetWorld()->GetAuthGameMode<ABlasterGameMode>()};
+	BlasterGameMode->RequestRespawn(this, Controller);
 }
 
 void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
@@ -195,7 +210,7 @@ void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
 
 	if (Health == 0.f)
 	{
-		ABlasterGameMode* BlasterGameMode{GetWorld()->GetAuthGameMode<ABlasterGameMode>()};
+		const ABlasterGameMode* BlasterGameMode{GetWorld()->GetAuthGameMode<ABlasterGameMode>()};
 		ABlasterPlayerController* AttackerController{Cast<ABlasterPlayerController>(InstigatedBy)};
 		BlasterGameMode->PlayerEliminated(this, BlasterPlayerControllerRaw, AttackerController);
 	}
@@ -427,6 +442,11 @@ void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
+FVector ABlasterCharacter::GetHitTargetLocation() const
+{
+	return CombatComponent->HitTargetLocation;
+}
+
 void ABlasterCharacter::PlayHitReactMontage() const
 {
 	if (!ensure(HitReactMontage))
@@ -442,11 +462,6 @@ void ABlasterCharacter::PlayHitReactMontage() const
 	AnimInstance->Montage_Play(HitReactMontage);
 	const FName SectionName{"FromFront"};
 	AnimInstance->Montage_JumpToSection(SectionName);
-}
-
-FVector ABlasterCharacter::GetHitTargetLocation() const
-{
-	return CombatComponent->HitTargetLocation;
 }
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef

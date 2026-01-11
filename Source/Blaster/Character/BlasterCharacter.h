@@ -56,6 +56,7 @@ private:
 #pragma region Elimination
 
 public:
+	void Eliminate();
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Eliminate();
 	void PlayEliminationMontage() const;
@@ -65,11 +66,17 @@ public:
 		return bEliminated;
 	}
 
+	void EliminationTimerCompleted();
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination")
 	TObjectPtr<UAnimMontage> EliminationMontage;
 
 	bool bEliminated{false};
+	
+	FTimerHandle EliminationTimer;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination")
+	float EliminationDelay{3.f};
 
 #pragma endregion
 
