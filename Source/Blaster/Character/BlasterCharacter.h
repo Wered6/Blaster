@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blaster/Weapon/BlasterInteractWithCrosshairsInterface.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+class UTimelineComponent;
 class ABlasterPlayerController;
 enum class ETurningInPlace : uint8;
 class UBlasterCombatComponent;
@@ -67,16 +69,32 @@ public:
 	}
 
 	void EliminationTimerCompleted();
-	
+
+	void StartDissolve();
+	UFUNCTION()
+	void UpdateDissolveMaterial(const float DissolveValue);
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination")
 	TObjectPtr<UAnimMontage> EliminationMontage;
 
 	bool bEliminated{false};
-	
+
 	FTimerHandle EliminationTimer;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination")
 	float EliminationDelay{3.f};
+
+	FOnTimelineFloat DissolveTrack;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination")
+	TObjectPtr<UCurveFloat> DissolveCurve;
+
+	// Material instance set on the Blueprint, used with the dynamic material instance
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination")
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+	// Dynamic instance that we can change at runtime
+	UPROPERTY(VisibleAnywhere, Category="Blaster|Elimination")
+	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
 
 #pragma endregion
 
@@ -247,6 +265,8 @@ private:
 	TObjectPtr<UCameraComponent> CameraComponent;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBlasterCombatComponent> CombatComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTimelineComponent> DissolveTimelineComponent;
 
 #pragma endregion
 };

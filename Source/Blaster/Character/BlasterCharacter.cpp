@@ -53,6 +53,8 @@ ABlasterCharacter::ABlasterCharacter()
 	SetMinNetUpdateFrequency(33.f);
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	DissolveTimelineComponent = CreateDefaultSubobject<UTimelineComponent>("DissolveTimelineComponent");
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -152,8 +154,20 @@ void ABlasterCharacter::OnRep_PlayerState()
 
 void ABlasterCharacter::Multicast_Eliminate_Implementation()
 {
+	if (!ensure(DissolveMaterialInstance))
+	{
+		return;
+	}
+
 	bEliminated = true;
 	PlayEliminationMontage();
+
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+	GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Glow"), 200.f);
+
+	StartDissolve();
 }
 
 // TODO sometimes BlasterOverheadWidget is nullptr. Investigate it
@@ -189,6 +203,31 @@ void ABlasterCharacter::EliminationTimerCompleted()
 {
 	ABlasterGameMode* BlasterGameMode{GetWorld()->GetAuthGameMode<ABlasterGameMode>()};
 	BlasterGameMode->RequestRespawn(this, Controller);
+}
+
+void ABlasterCharacter::StartDissolve()
+{
+	if (!ensure(DissolveCurve))
+	{
+		return;
+	}
+
+	DissolveTrack.BindDynamic(this, &ABlasterCharacter::UpdateDissolveMaterial);
+
+	DissolveTimelineComponent->AddInterpFloat(DissolveCurve, DissolveTrack);
+	DissolveTimelineComponent->Play();
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+// Bound to delegate
+void ABlasterCharacter::UpdateDissolveMaterial(const float DissolveValue)
+{
+	if (!ensure(DynamicDissolveMaterialInstance))
+	{
+		return;
+	}
+
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), DissolveValue);
 }
 
 void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
