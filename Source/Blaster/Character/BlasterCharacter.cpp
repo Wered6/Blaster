@@ -170,11 +170,15 @@ void ABlasterCharacter::Multicast_Eliminate_Implementation()
 	StartDissolve();
 }
 
-// TODO sometimes BlasterOverheadWidget is nullptr. Investigate it
 void ABlasterCharacter::ShowPlayerName() const
 {
+	// Make sure widget is valid
 	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
-	if (!ensure(BlasterOverheadWidget))
+	if (!BlasterOverheadWidget)
+	{
+		OverheadWidgetComponent->InitWidget();
+	}
+	if (!ensureAlways(BlasterOverheadWidget))
 	{
 		return;
 	}
@@ -339,8 +343,10 @@ void ABlasterCharacter::Move(const FInputActionValue& Value)
 
 	// add movement
 	// TODO change it to Internal_AddMovementInput
-	AddMovementInput(ForwardDirection, MovementVector.Y);
-	AddMovementInput(RightDirection, MovementVector.X);
+	// AddMovementInput(ForwardDirection, MovementVector.Y);
+	// AddMovementInput(RightDirection, MovementVector.X);
+	Internal_AddMovementInput(ForwardDirection * MovementVector.Y);
+	Internal_AddMovementInput(RightDirection * MovementVector.X);
 }
 
 void ABlasterCharacter::Look(const FInputActionValue& Value)
