@@ -49,6 +49,8 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void OnRep_PlayerState() override;
+	
+	virtual void OnRep_Controller() override;
 
 private:
 	void ShowPlayerName() const;

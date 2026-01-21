@@ -6,15 +6,16 @@
 #include "Blaster/HUD/BlasterHUD.h"
 
 
-void ABlasterPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	BlasterHUD = Cast<ABlasterHUD>(GetHUD());
-}
-
 void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxHealth) const
 {
+	const ABlasterHUD* BlasterHUD{GetHUD<ABlasterHUD>()};
+
+	if (!BlasterHUD)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: BlasterHUD is nullptr"), TEXT(__FUNCTION__))
+		return;
+	}
+
 	const float HealthPercent{Health / MaxHealth};
 	BlasterHUD->GetCharacterOverlay()->SetHealthBarPercent(HealthPercent);
 

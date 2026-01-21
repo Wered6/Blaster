@@ -15,6 +15,15 @@ struct FBlasterCrosshairsPackage
 		return CrosshairCenter && CrosshairLeft && CrosshairRight && CrosshairTop && CrosshairBottom;
 	}
 
+	void Reset()
+	{
+		CrosshairCenter = nullptr;
+		CrosshairLeft = nullptr;
+		CrosshairRight = nullptr;
+		CrosshairTop = nullptr;
+		CrosshairBottom = nullptr;
+	}
+
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UTexture2D> CrosshairCenter;
 	UPROPERTY(EditDefaultsOnly)
@@ -25,8 +34,8 @@ struct FBlasterCrosshairsPackage
 	TObjectPtr<UTexture2D> CrosshairTop;
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UTexture2D> CrosshairBottom;
-	
+
 	float CrosshairSpread;
-	
+
 	FLinearColor CrosshairColor;
 };

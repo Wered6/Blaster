@@ -42,6 +42,21 @@ void ABlasterWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(ABlasterWeaponBase, WeaponState)
 }
 
+void ABlasterWeaponBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		AreaSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		AreaSphereComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		AreaSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ABlasterWeaponBase::OnAreaSphereBeginOverlap);
+		AreaSphereComponent->OnComponentEndOverlap.AddDynamic(this, &ABlasterWeaponBase::OnAreaSphereEndOverlap);
+	}
+
+	PickUpWidgetComponent->SetVisibility(false);
+}
+
 void ABlasterWeaponBase::ShowPickUpWidget(const bool bShowWidget) const
 {
 	if (PickUpWidgetComponent)
@@ -56,15 +71,51 @@ void ABlasterWeaponBase::SetWeaponState(const EBlasterWeaponState State)
 
 	switch (WeaponState)
 	{
-	case EBlasterWeaponState::Initial:
-		break;
 	case EBlasterWeaponState::Equipped:
 		ShowPickUpWidget(false);
-		AreaSphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+		AreaSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponMeshComponent->SetSimulatePhysics(false);
+		WeaponMeshComponent->SetEnableGravity(false);
+		WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 	case EBlasterWeaponState::Dropped:
+		if (HasAuthority())
+		{
+			AreaSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		WeaponMeshComponent->SetSimulatePhysics(true);
+		WeaponMeshComponent->SetEnableGravity(true);
+		WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		break;
-	case EBlasterWeaponState::MAX:
+	default:
+		break;
+	}
+}
+
+void ABlasterWeaponBase::Drop()
+{
+	SetWeaponState(EBlasterWeaponState::Dropped);
+	WeaponMeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	SetOwner(nullptr);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ABlasterWeaponBase::OnRep_WeaponState()
+{
+	switch (WeaponState)
+	{
+	case EBlasterWeaponState::Equipped:
+		ShowPickUpWidget(false);
+		WeaponMeshComponent->SetSimulatePhysics(false);
+		WeaponMeshComponent->SetEnableGravity(false);
+		WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+	case EBlasterWeaponState::Dropped:
+		WeaponMeshComponent->SetSimulatePhysics(true);
+		WeaponMeshComponent->SetEnableGravity(true);
+		WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		break;
+	default:
 		break;
 	}
 }
@@ -86,24 +137,6 @@ void ABlasterWeaponBase::Fire(const FVector& HitTargetLocation)
 
 	const FTransform SocketTransform{AmmoEjectSocket->GetSocketTransform(WeaponMeshComponent)};
 	GetWorld()->SpawnActor<ABlasterCasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
-}
-
-void ABlasterWeaponBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		AreaSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		AreaSphereComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-		AreaSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ABlasterWeaponBase::OnAreaSphereBeginOverlap);
-		AreaSphereComponent->OnComponentEndOverlap.AddDynamic(this, &ABlasterWeaponBase::OnAreaSphereEndOverlap);
-	}
-
-	if (PickUpWidgetComponent)
-	{
-		PickUpWidgetComponent->SetVisibility(false);
-	}
 }
 
 void ABlasterWeaponBase::OnAreaSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -129,23 +162,5 @@ void ABlasterWeaponBase::OnAreaSphereEndOverlap(UPrimitiveComponent* OverlappedC
 	if (BlasterCharacter)
 	{
 		BlasterCharacter->SetOverlappingWeapon(nullptr);
-	}
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void ABlasterWeaponBase::OnRep_WeaponState()
-{
-	switch (WeaponState)
-	{
-	case EBlasterWeaponState::Initial:
-		break;
-	case EBlasterWeaponState::Equipped:
-		ShowPickUpWidget(false);
-		AreaSphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-		break;
-	case EBlasterWeaponState::Dropped:
-		break;
-	case EBlasterWeaponState::MAX:
-		break;
 	}
 }

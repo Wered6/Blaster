@@ -32,25 +32,15 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void ShowPickUpWidget(const bool bShowWidget) const;
-
-	void SetWeaponState(const EBlasterWeaponState State);
-
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	virtual void OnAreaSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-	                                      AActor* OtherActor,
-	                                      UPrimitiveComponent* OtherComp,
-	                                      int32 OtherBodyIndex,
-	                                      bool bFromSweep,
-	                                      const FHitResult& SweepResult);
-	UFUNCTION()
-	virtual void OnAreaSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
-	                                    AActor* OtherActor,
-	                                    UPrimitiveComponent* OtherComp,
-	                                    int32 OtherBodyIndex);
+public:
+	void ShowPickUpWidget(const bool bShowWidget) const;
+
+	void SetWeaponState(const EBlasterWeaponState State);
+	
+	void Drop();
 
 private:
 	UFUNCTION()
@@ -71,7 +61,7 @@ public:
 	{
 		return FireDelay;
 	}
-	
+
 	FORCEINLINE bool IsAutomatic() const
 	{
 		return bAutomatic;
@@ -133,6 +123,20 @@ public:
 	{
 		return WeaponMeshComponent;
 	}
+
+protected:
+	UFUNCTION()
+	virtual void OnAreaSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	                                      AActor* OtherActor,
+	                                      UPrimitiveComponent* OtherComp,
+	                                      int32 OtherBodyIndex,
+	                                      bool bFromSweep,
+	                                      const FHitResult& SweepResult);
+	UFUNCTION()
+	virtual void OnAreaSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
+	                                    AActor* OtherActor,
+	                                    UPrimitiveComponent* OtherComp,
+	                                    int32 OtherBodyIndex);
 
 private:
 	UPROPERTY(VisibleAnywhere)

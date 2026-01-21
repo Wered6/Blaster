@@ -39,6 +39,7 @@ private:
 
 public:
 	void EquipWeapon(ABlasterWeaponBase* Weapon);
+	void DropWeapon();
 
 private:
 	UFUNCTION()

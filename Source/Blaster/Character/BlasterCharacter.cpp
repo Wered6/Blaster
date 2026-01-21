@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blaster/Blaster.h"
 #include "Blaster/Game/BlasterGameMode.h"
+#include "Blaster/HUD/BlasterHUD.h"
 #include "Blaster/HUD/BlasterOverheadWidget.h"
 #include "Blaster/Player/BlasterPlayerController.h"
 #include "Blaster/Weapon/BlasterCombatComponent.h"
@@ -44,11 +45,13 @@ ABlasterCharacter::ABlasterCharacter()
 	CombatComponent->SetIsReplicated(true);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	TurningInPlace = ETurningInPlace::NotTurning;
+
 	SetNetUpdateFrequency(66.f);
 	SetMinNetUpdateFrequency(33.f);
 
@@ -76,10 +79,12 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// on the server, pawns that are NOT controlled by the host
-	// doesn't need check for Authority because PossessedBy is getting called only on server
+	BlasterPlayerController = GetController<ABlasterPlayerController>();
+	CombatComponent->BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+
 	if (!IsLocallyControlled())
 	{
+		// on the server, pawns that are NOT controlled by the host
 		ShowPlayerName();
 	}
 }
@@ -100,9 +105,6 @@ void ABlasterCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
-	// null on sim proxies
-	BlasterPlayerController = Cast<ABlasterPlayerController>(Controller);
 
 	const bool bLocallyControlled{IsLocallyControlled()};
 
@@ -152,6 +154,14 @@ void ABlasterCharacter::OnRep_PlayerState()
 	ShowPlayerName();
 }
 
+void ABlasterCharacter::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+	
+	// Controller is only valid on server and controlled clients
+	BlasterPlayerController = GetController<ABlasterPlayerController>();
+}
+
 void ABlasterCharacter::Multicast_Eliminate_Implementation()
 {
 	if (!ensure(DissolveMaterialInstance))
@@ -162,22 +172,32 @@ void ABlasterCharacter::Multicast_Eliminate_Implementation()
 	bEliminated = true;
 	PlayEliminationMontage();
 
-	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-	GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Glow"), 200.f);
+	// Start dissolve effect
+	{
+		DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Glow"), 200.f);
 
-	StartDissolve();
+		StartDissolve();
+	}
+
+	DisableInput(BlasterPlayerController.Get());
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABlasterCharacter::ShowPlayerName() const
 {
 	// Make sure widget is valid
-	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
-	if (!BlasterOverheadWidget)
+	const UUserWidget* Widget{OverheadWidgetComponent->GetUserWidgetObject()};
+	if (!Widget)
 	{
 		OverheadWidgetComponent->InitWidget();
 	}
+
+	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
 	if (!ensureAlways(BlasterOverheadWidget))
 	{
 		return;
@@ -188,6 +208,11 @@ void ABlasterCharacter::ShowPlayerName() const
 
 void ABlasterCharacter::Eliminate()
 {
+	if (CombatComponent->EquippedWeapon)
+	{
+		CombatComponent->DropWeapon();
+	}
+
 	Multicast_Eliminate();
 	GetWorldTimerManager().SetTimer(EliminationTimer, this, &ABlasterCharacter::EliminationTimerCompleted, EliminationDelay);
 }
@@ -342,9 +367,6 @@ void ABlasterCharacter::Move(const FInputActionValue& Value)
 	const FVector RightDirection{FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y)};
 
 	// add movement
-	// TODO change it to Internal_AddMovementInput
-	// AddMovementInput(ForwardDirection, MovementVector.Y);
-	// AddMovementInput(RightDirection, MovementVector.X);
 	Internal_AddMovementInput(ForwardDirection * MovementVector.Y);
 	Internal_AddMovementInput(RightDirection * MovementVector.X);
 }

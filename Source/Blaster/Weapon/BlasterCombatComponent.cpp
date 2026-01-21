@@ -44,7 +44,6 @@ void UBlasterCombatComponent::BeginPlay()
 		{
 			return;
 		}
-
 		BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
 	}
 }
@@ -89,23 +88,57 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	BlasterCharacterRaw->bUseControllerRotationYaw = true;
 	if (BlasterCharacter->IsLocallyControlled())
 	{
+		if (!ensureMsgf(BlasterHUD.Get(), TEXT("Machine: %d"), UE::GetPlayInEditorID()))
+		{
+			return;
+		}
 		BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+	}
+}
+
+void UBlasterCombatComponent::DropWeapon()
+{
+	// Called only on server
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Drop();
+		EquippedWeapon = nullptr;
+		if (BlasterCharacter->IsLocallyControlled())
+		{
+			BlasterHUD->ResetCrosshairsPackage();
+		}
 	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UBlasterCombatComponent::OnRep_EquippedWeapon()
 {
-	if (EquippedWeapon)
-	{
-		ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
+	ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
 
-		BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
-		BlasterCharacterRaw->bUseControllerRotationYaw = true;
+	if (!EquippedWeapon)
+	{
 		if (BlasterCharacterRaw->IsLocallyControlled())
 		{
-			BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+			BlasterHUD->ResetCrosshairsPackage();
 		}
+		return;
+	}
+
+	EquippedWeapon->SetWeaponState(EBlasterWeaponState::Equipped);
+	const USkeletalMeshSocket* HandSocket{BlasterCharacterRaw->GetMesh()->GetSocketByName(FName("RightHandSocket"))};
+	if (!ensure(HandSocket))
+	{
+		return;
+	}
+	HandSocket->AttachActor(EquippedWeapon, BlasterCharacterRaw->GetMesh());
+
+	BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
+	BlasterCharacterRaw->bUseControllerRotationYaw = true;
+
+	if (BlasterCharacterRaw->IsLocallyControlled())
+	{
+		BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
 	}
 }
 
@@ -175,7 +208,6 @@ void UBlasterCombatComponent::Server_SetAiming_Implementation(const bool bInAimi
 	BlasterCharacter->GetCharacterMovement()->MaxWalkSpeed = bInAiming ? AimWalkSpeed : BaseWalkSpeed;
 }
 
-
 void UBlasterCombatComponent::InterpFOV(const float DeltaTime)
 {
 	if (!EquippedWeapon)
@@ -229,7 +261,10 @@ void UBlasterCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		TargetActor = Cast<IBlasterInteractWithCrosshairsInterface>(TraceHitResult.GetActor());
 
-		BlasterHUD->SetCrosshairsColor(TargetActor ? FLinearColor::Red : FLinearColor::White);
+		if (BlasterHUD.Get())
+		{
+			BlasterHUD->SetCrosshairsColor(TargetActor ? FLinearColor::Red : FLinearColor::White);
+		}
 	}
 }
 
@@ -269,5 +304,9 @@ void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
 		CrosshairShootingFactor -
 		CrosshairAimAtPlayerFactor
 	};
+	if (!ensureMsgf(BlasterHUD.Get(), TEXT("Machine: %d"), UE::GetPlayInEditorID()))
+	{
+		return;
+	}
 	BlasterHUD->SetCrosshairsSpread(CrosshairSpread);
 }

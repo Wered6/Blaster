@@ -47,6 +47,11 @@ public:
 		CrosshairsPackage = Package;
 	}
 
+	FORCEINLINE void ResetCrosshairsPackage()
+	{
+		CrosshairsPackage.Reset();
+	}
+
 	FORCEINLINE void SetCrosshairsSpread(const float Spread)
 	{
 		CrosshairsPackage.CrosshairSpread = Spread;
