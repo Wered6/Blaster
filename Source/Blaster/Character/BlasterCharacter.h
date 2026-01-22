@@ -51,6 +51,8 @@ public:
 	virtual void OnRep_PlayerState() override;
 	
 	virtual void OnRep_Controller() override;
+	
+	virtual void Destroyed() override;
 
 private:
 	void ShowPlayerName() const;
@@ -97,6 +99,13 @@ private:
 	// Dynamic instance that we can change at runtime
 	UPROPERTY(VisibleAnywhere, Category="Blaster|Elimination")
 	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination|Bot")
+	TObjectPtr<UParticleSystem> EliminationBotParticleSystem;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UParticleSystemComponent> EliminationBotParticleSystemComponent;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination|Bot")
+	TObjectPtr<USoundCue> EliminationBotSound;
 
 #pragma endregion
 

@@ -16,8 +16,11 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Sound/SoundCue.h"
 
 
 ABlasterCharacter::ABlasterCharacter()
@@ -157,14 +160,29 @@ void ABlasterCharacter::OnRep_PlayerState()
 void ABlasterCharacter::OnRep_Controller()
 {
 	Super::OnRep_Controller();
-	
+
 	// Controller is only valid on server and controlled clients
 	BlasterPlayerController = GetController<ABlasterPlayerController>();
+}
+
+void ABlasterCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	EliminationBotParticleSystemComponent->DestroyComponent();
 }
 
 void ABlasterCharacter::Multicast_Eliminate_Implementation()
 {
 	if (!ensure(DissolveMaterialInstance))
+	{
+		return;
+	}
+	if (!ensure(EliminationBotParticleSystem))
+	{
+		return;
+	}
+	if (!ensure(EliminationBotSound))
 	{
 		return;
 	}
@@ -182,10 +200,32 @@ void ABlasterCharacter::Multicast_Eliminate_Implementation()
 		StartDissolve();
 	}
 
+	// Disable character movement
 	DisableInput(BlasterPlayerController.Get());
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Disable collision
+	{
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	// Spawn elimination bot
+	{
+		FVector EliminationBotSpawnPoint{GetActorLocation()};
+		EliminationBotSpawnPoint.Z += 200.f;
+		EliminationBotParticleSystemComponent = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			EliminationBotParticleSystem,
+			EliminationBotSpawnPoint,
+			GetActorRotation()
+		);
+
+		UGameplayStatics::SpawnSoundAtLocation(
+			this,
+			EliminationBotSound,
+			GetActorLocation()
+		);
+	}
 }
 
 void ABlasterCharacter::ShowPlayerName() const
