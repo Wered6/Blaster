@@ -3,6 +3,8 @@
 
 #include "BlasterGameMode.h"
 #include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/Player/BlasterPlayerController.h"
+#include "Blaster/Player/BlasterPlayerState.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -10,6 +12,15 @@ void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* EliminatedCharacter,
                                         ABlasterPlayerController* VictimController,
                                         ABlasterPlayerController* AttackerController) const
 {
+	ABlasterPlayerState* AttackerPlayerState{AttackerController->GetPlayerState<ABlasterPlayerState>()};
+	const ABlasterPlayerState* VictimPlayerState{VictimController->GetPlayerState<ABlasterPlayerState>()};
+	
+	// how is it even possible? why would we need this check?
+	if (AttackerPlayerState != VictimPlayerState)
+	{
+		AttackerPlayerState->AddToScore(1.f);
+	}
+
 	EliminatedCharacter->Eliminate();
 }
 

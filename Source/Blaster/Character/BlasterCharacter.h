@@ -49,9 +49,9 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void OnRep_PlayerState() override;
-	
+
 	virtual void OnRep_Controller() override;
-	
+
 	virtual void Destroyed() override;
 
 private:
@@ -99,7 +99,7 @@ private:
 	// Dynamic instance that we can change at runtime
 	UPROPERTY(VisibleAnywhere, Category="Blaster|Elimination")
 	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Elimination|Bot")
 	TObjectPtr<UParticleSystem> EliminationBotParticleSystem;
 	UPROPERTY(VisibleAnywhere)
@@ -110,6 +110,17 @@ private:
 #pragma endregion
 
 #pragma region Health
+
+public:
+	FORCEINLINE float GetHealth() const
+	{
+		return Health;
+	}
+
+	FORCEINLINE float GetMaxHealth() const
+	{
+		return MaxHealth;
+	}
 
 private:
 	UFUNCTION()

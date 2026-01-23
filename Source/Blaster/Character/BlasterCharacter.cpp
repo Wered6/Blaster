@@ -305,10 +305,12 @@ void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
                                       AController* InstigatedBy,
                                       AActor* DamageCauser)
 {
+	// OnDamageTaken happens only on server
 	ABlasterPlayerController* BlasterPlayerControllerRaw{BlasterPlayerController.Get()};
 
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
+	// Only for controlled character on server
 	if (IsLocallyControlled())
 	{
 		BlasterPlayerControllerRaw->SetHUDHealth(Health, MaxHealth);
@@ -327,6 +329,7 @@ void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::OnRep_Health()
 {
+	// Only for controlled characters on clients
 	if (IsLocallyControlled())
 	{
 		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);

@@ -24,3 +24,13 @@ void UBlasterCharacterOverlay::SetHealthText(const FString& HealthString) const
 
 	HealthText->SetText(FText::FromString(HealthString));
 }
+
+void UBlasterCharacterOverlay::SetScoreText(const float Score) const
+{
+	if (!ensure(ScoreAmountText))
+	{
+		return;
+	}
+	
+	ScoreAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), FMath::FloorToInt(Score))));
+}
