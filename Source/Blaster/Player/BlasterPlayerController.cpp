@@ -2,7 +2,6 @@
 
 
 #include "BlasterPlayerController.h"
-
 #include "BlasterPlayerState.h"
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/HUD/BlasterCharacterOverlay.h"
@@ -61,9 +60,6 @@ void ABlasterPlayerController::SetHUDScore(const float Score) const
 		)
 		return;
 	}
-	// When player spawns for the first time BlasterCharacterOverlay is nullptr here,
-	// so in ABlasterCharacter::BeginPlay() we cover HUDHealth,
-	// but when player respawns there is need to do it in ABlasterPlayerController::OnPossess(APawn* InPawn) 
 	const UBlasterCharacterOverlay* BlasterCharacterOverlay{BlasterHUD->GetCharacterOverlay()};
 	if (!BlasterCharacterOverlay)
 	{
@@ -76,11 +72,34 @@ void ABlasterPlayerController::SetHUDScore(const float Score) const
 	BlasterCharacterOverlay->SetScoreText(Score);
 }
 
+void ABlasterPlayerController::SetHUDDefeats(const int32 Defeats) const
+{
+	const ABlasterHUD* BlasterHUD{GetHUD<ABlasterHUD>()};
+	if (!BlasterHUD)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterHUD is nullptr"),
+		       TEXT(__FUNCTION__),
+		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server")
+		)
+		return;
+	}
+	const UBlasterCharacterOverlay* BlasterCharacterOverlay{BlasterHUD->GetCharacterOverlay()};
+	if (!BlasterCharacterOverlay)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterCharacterOverlay is nullptr"),
+		       TEXT(__FUNCTION__),
+		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"))
+		return;
+	}
+
+	BlasterCharacterOverlay->SetDefeatsText(Defeats);
+}
+
 void ABlasterPlayerController::InitPlayerState()
 {
 	// Happens only on server
 	Super::InitPlayerState();
-	
+
 	ABlasterPlayerState* BlasterPlayerState{GetPlayerState<ABlasterPlayerState>()};
 	BlasterPlayerState->OnPawnSet.AddDynamic(BlasterPlayerState, &ABlasterPlayerState::OnPawnInitialized);
 }

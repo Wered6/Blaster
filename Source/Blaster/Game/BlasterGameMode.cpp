@@ -13,13 +13,14 @@ void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* EliminatedCharacter,
                                         ABlasterPlayerController* AttackerController) const
 {
 	ABlasterPlayerState* AttackerPlayerState{AttackerController->GetPlayerState<ABlasterPlayerState>()};
-	const ABlasterPlayerState* VictimPlayerState{VictimController->GetPlayerState<ABlasterPlayerState>()};
-	
+	ABlasterPlayerState* VictimPlayerState{VictimController->GetPlayerState<ABlasterPlayerState>()};
+
 	// how is it even possible? why would we need this check?
 	if (AttackerPlayerState != VictimPlayerState)
 	{
 		AttackerPlayerState->AddToScore(1.f);
 	}
+	VictimPlayerState->AddToDefeats(1);
 
 	EliminatedCharacter->Eliminate();
 }

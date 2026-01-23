@@ -22,5 +22,7 @@ public:
 	
 	void SetHUDScore(const float Score) const;
 	
+	void SetHUDDefeats(const int32 Defeats) const;
+	
 	virtual void InitPlayerState() override;
 };

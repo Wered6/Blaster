@@ -20,15 +20,19 @@ class BLASTER_API UBlasterCharacterOverlay : public UUserWidget
 public:
 	void SetHealthBarPercent(const float Percent) const;
 	void SetHealthText(const FString& HealthString) const;
-	
+
 	void SetScoreText(const float Score) const;
-	
+
+	void SetDefeatsText(const int32 Defeats) const;
+
 private:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> HealthText;
-	
+
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> ScoreAmountText;
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> DefeatsAmountText;
 };

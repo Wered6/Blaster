@@ -31,6 +31,16 @@ void UBlasterCharacterOverlay::SetScoreText(const float Score) const
 	{
 		return;
 	}
-	
+
 	ScoreAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), FMath::FloorToInt(Score))));
+}
+
+void UBlasterCharacterOverlay::SetDefeatsText(const int32 Defeats) const
+{
+	if (!ensure(DefeatsAmountText))
+	{
+		return;
+	}
+
+	DefeatsAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Defeats)));
 }

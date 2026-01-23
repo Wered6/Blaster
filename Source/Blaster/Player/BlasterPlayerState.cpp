@@ -4,6 +4,14 @@
 #include "BlasterPlayerState.h"
 #include "BlasterPlayerController.h"
 #include "Blaster/Character/BlasterCharacter.h"
+#include "Net/UnrealNetwork.h"
+
+void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABlasterPlayerState, Defeats)
+}
 
 void ABlasterPlayerState::BeginPlay()
 {
@@ -46,5 +54,23 @@ void ABlasterPlayerState::OnRep_Score()
 	if (BlasterCharacter->IsLocallyControlled())
 	{
 		BlasterPlayerController->SetHUDScore(GetScore());
+	}
+}
+
+void ABlasterPlayerState::AddToDefeats(const int32 DefeatsAmount)
+{
+	Defeats += DefeatsAmount;
+
+	if (BlasterCharacter->IsLocallyControlled())
+	{
+		BlasterPlayerController->SetHUDDefeats(Defeats);
+	}
+}
+
+void ABlasterPlayerState::OnRep_Defeats()
+{
+	if (BlasterCharacter->IsLocallyControlled())
+	{
+		BlasterPlayerController->SetHUDDefeats(Defeats);
 	}
 }
