@@ -15,6 +15,8 @@ void ABlasterHUD::BeginPlay()
 
 	CharacterOverlay = CreateWidget<UBlasterCharacterOverlay>(GetOwningPlayerController(), CharacterOverlayClass);
 	CharacterOverlay->AddToViewport();
+
+	OnCharacterOverlayInitializedDelegate.Broadcast();
 }
 
 void ABlasterHUD::DrawHUD()

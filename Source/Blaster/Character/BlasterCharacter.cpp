@@ -109,19 +109,11 @@ void ABlasterCharacter::BeginPlay()
 		}
 	}
 
-	const bool bLocallyControlled{IsLocallyControlled()};
-
-	// all characters on server and all locally controlled characters have player controller, but we have HUD only on locally controlled ones
-	if (bLocallyControlled)
-	{
-		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
-	}
-
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::OnDamageTaken);
 
-		if (bLocallyControlled)
+		if (IsLocallyControlled())
 		{
 			ShowPlayerName();
 		}
@@ -174,15 +166,7 @@ void ABlasterCharacter::Destroyed()
 
 void ABlasterCharacter::Multicast_Eliminate_Implementation()
 {
-	if (!ensure(DissolveMaterialInstance))
-	{
-		return;
-	}
-	if (!ensure(EliminationBotParticleSystem))
-	{
-		return;
-	}
-	if (!ensure(EliminationBotSound))
+	if (!ensure(DissolveMaterialInstance && EliminationBotParticleSystem && EliminationBotSound))
 	{
 		return;
 	}
@@ -310,9 +294,9 @@ void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
 
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
-	// Only for controlled character on server
 	if (IsLocallyControlled())
 	{
+		// Happens for local authoritative controller whenever it took damage
 		BlasterPlayerControllerRaw->SetHUDHealth(Health, MaxHealth);
 	}
 
@@ -329,9 +313,9 @@ void ABlasterCharacter::OnDamageTaken(AActor* DamagedActor,
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::OnRep_Health()
 {
-	// Only for controlled characters on clients
 	if (IsLocallyControlled())
 	{
+		// Happens for autonomous proxies whenever it took damage
 		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
 	}
 

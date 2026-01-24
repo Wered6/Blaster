@@ -7,6 +7,8 @@
 #include "GameFramework/HUD.h"
 #include "BlasterHUD.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnCharacterOverlayInitializedSignature)
+
 class UBlasterCharacterOverlay;
 
 /**
@@ -27,6 +29,8 @@ public:
 	{
 		return CharacterOverlay;
 	}
+
+	FOnCharacterOverlayInitializedSignature OnCharacterOverlayInitializedDelegate;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Overlay")

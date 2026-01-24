@@ -12,87 +12,53 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	if (!bCharacterOverlayValid)
+	{
+		return;
+	}
+
 	if (IsLocalController())
 	{
 		const ABlasterCharacter* BlasterCharacter{Cast<ABlasterCharacter>(InPawn)};
+		// Happens for local authoritative controller at respawn 
 		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
 	}
 }
 
-void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxHealth) const
+void ABlasterPlayerController::OnRep_Pawn()
 {
-	const ABlasterHUD* BlasterHUD{GetHUD<ABlasterHUD>()};
-	if (!BlasterHUD)
+	Super::OnRep_Pawn();
+
+	if (!bCharacterOverlayValid)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterHUD is nullptr"),
-		       TEXT(__FUNCTION__),
-		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server")
-		)
-		return;
-	}
-	// When player spawns for the first time BlasterCharacterOverlay is nullptr here,
-	// so in ABlasterCharacter::BeginPlay() we cover HUDHealth,
-	// but when player respawns there is need to do it in ABlasterPlayerController::OnPossess(APawn* InPawn) 
-	const UBlasterCharacterOverlay* BlasterCharacterOverlay{BlasterHUD->GetCharacterOverlay()};
-	if (!BlasterCharacterOverlay)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterCharacterOverlay is nullptr"),
-		       TEXT(__FUNCTION__),
-		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"))
 		return;
 	}
 
-	const float HealthPercent{Health / MaxHealth};
-	BlasterCharacterOverlay->SetHealthBarPercent(HealthPercent);
-
-	const FString HealthText{FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth))};
-	BlasterCharacterOverlay->SetHealthText(HealthText);
+	const ABlasterCharacter* BlasterCharacter{GetPawn<ABlasterCharacter>()};
+	// Happens for autonomous proxies at spawn and respawn 
+	SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
 }
 
-void ABlasterPlayerController::SetHUDScore(const float Score) const
+void ABlasterPlayerController::ClientSetHUD_Implementation(TSubclassOf<AHUD> NewHUDClass)
 {
-	const ABlasterHUD* BlasterHUD{GetHUD<ABlasterHUD>()};
-	if (!BlasterHUD)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterHUD is nullptr"),
-		       TEXT(__FUNCTION__),
-		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server")
-		)
-		return;
-	}
-	const UBlasterCharacterOverlay* BlasterCharacterOverlay{BlasterHUD->GetCharacterOverlay()};
-	if (!BlasterCharacterOverlay)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterCharacterOverlay is nullptr"),
-		       TEXT(__FUNCTION__),
-		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"))
-		return;
-	}
+	Super::ClientSetHUD_Implementation(NewHUDClass);
 
-	BlasterCharacterOverlay->SetScoreText(Score);
+	BlasterHUD = GetHUD<ABlasterHUD>();
+	BlasterHUD->OnCharacterOverlayInitializedDelegate.AddUObject(this, &ABlasterPlayerController::OnCharacterOverlayInitialized);
 }
 
-void ABlasterPlayerController::SetHUDDefeats(const int32 Defeats) const
+void ABlasterPlayerController::OnCharacterOverlayInitialized()
 {
-	const ABlasterHUD* BlasterHUD{GetHUD<ABlasterHUD>()};
-	if (!BlasterHUD)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterHUD is nullptr"),
-		       TEXT(__FUNCTION__),
-		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server")
-		)
-		return;
-	}
-	const UBlasterCharacterOverlay* BlasterCharacterOverlay{BlasterHUD->GetCharacterOverlay()};
-	if (!BlasterCharacterOverlay)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, BlasterCharacterOverlay is nullptr"),
-		       TEXT(__FUNCTION__),
-		       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"))
-		return;
-	}
+	BlasterCharacterOverlay = BlasterHUD->GetCharacterOverlay();
 
-	BlasterCharacterOverlay->SetDefeatsText(Defeats);
+	bCharacterOverlayValid = true;
+
+	if (HasAuthority())
+	{
+		const ABlasterCharacter* BlasterCharacter{GetPawn<ABlasterCharacter>()};
+		// Happens for local authoritative controller at spawn
+		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
+	}
 }
 
 void ABlasterPlayerController::InitPlayerState()
@@ -102,4 +68,45 @@ void ABlasterPlayerController::InitPlayerState()
 
 	ABlasterPlayerState* BlasterPlayerState{GetPlayerState<ABlasterPlayerState>()};
 	BlasterPlayerState->OnPawnSet.AddDynamic(BlasterPlayerState, &ABlasterPlayerState::OnPawnInitialized);
+}
+
+void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxHealth) const
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s"),
+	       TEXT(__FUNCTION__),
+	       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"))
+
+	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
+	if (!ensureAlways(BlasterCharacterOverlayRaw))
+	{
+		return;
+	}
+
+	const float HealthPercent{Health / MaxHealth};
+	BlasterCharacterOverlayRaw->SetHealthBarPercent(HealthPercent);
+
+	const FString HealthText{FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth))};
+	BlasterCharacterOverlayRaw->SetHealthText(HealthText);
+}
+
+void ABlasterPlayerController::SetHUDScore(const float Score) const
+{
+	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
+	if (!ensureAlways(BlasterCharacterOverlayRaw))
+	{
+		return;
+	}
+
+	BlasterCharacterOverlayRaw->SetScoreText(Score);
+}
+
+void ABlasterPlayerController::SetHUDDefeats(const int32 Defeats) const
+{
+	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
+	if (!ensureAlways(BlasterCharacterOverlayRaw))
+	{
+		return;
+	}
+
+	BlasterCharacterOverlayRaw->SetDefeatsText(Defeats);
 }
