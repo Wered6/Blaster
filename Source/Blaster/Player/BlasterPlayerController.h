@@ -16,10 +16,10 @@ class BLASTER_API ABlasterPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;
-	
+
 	virtual void ClientSetHUD_Implementation(TSubclassOf<AHUD> NewHUDClass) override;
 	void OnCharacterOverlayInitialized();
 
@@ -31,9 +31,11 @@ public:
 
 	void SetHUDDefeats(const int32 Defeats) const;
 
+	void ShowEliminatedInfo(float PlayRate) const;
+
 private:
 	bool bCharacterOverlayValid{false};
-	
+
 	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
 	TWeakObjectPtr<UBlasterCharacterOverlay> BlasterCharacterOverlay;
 };

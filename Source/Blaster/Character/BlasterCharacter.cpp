@@ -210,6 +210,11 @@ void ABlasterCharacter::Multicast_Eliminate_Implementation()
 			GetActorLocation()
 		);
 	}
+
+	if (IsLocallyControlled())
+	{
+		BlasterPlayerController->ShowEliminatedInfo(EliminationDelay);
+	}
 }
 
 void ABlasterCharacter::ShowPlayerName() const

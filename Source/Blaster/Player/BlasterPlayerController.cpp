@@ -72,10 +72,6 @@ void ABlasterPlayerController::InitPlayerState()
 
 void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxHealth) const
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s"),
-	       TEXT(__FUNCTION__),
-	       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"))
-
 	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
 	if (!ensureAlways(BlasterCharacterOverlayRaw))
 	{
@@ -109,4 +105,15 @@ void ABlasterPlayerController::SetHUDDefeats(const int32 Defeats) const
 	}
 
 	BlasterCharacterOverlayRaw->SetDefeatsText(Defeats);
+}
+
+void ABlasterPlayerController::ShowEliminatedInfo(const float PlayRate) const
+{
+	UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
+	if (!ensureAlways(BlasterCharacterOverlayRaw))
+	{
+		return;
+	}
+
+	BlasterCharacterOverlayRaw->ShowEliminatedText(PlayRate);
 }

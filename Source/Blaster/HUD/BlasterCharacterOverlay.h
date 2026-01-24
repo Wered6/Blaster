@@ -25,6 +25,8 @@ public:
 
 	void SetDefeatsText(const int32 Defeats) const;
 
+	void ShowEliminatedText(float PlayRate);
+
 private:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;
@@ -35,4 +37,7 @@ private:
 	TObjectPtr<UTextBlock> ScoreAmountText;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> DefeatsAmountText;
+
+	UPROPERTY(Transient, meta=(BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> EliminatedInfoAnim;
 };

@@ -44,3 +44,18 @@ void UBlasterCharacterOverlay::SetDefeatsText(const int32 Defeats) const
 
 	DefeatsAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Defeats)));
 }
+
+void UBlasterCharacterOverlay::ShowEliminatedText(const float PlayRate)
+{
+	if (!ensure(EliminatedInfoAnim))
+	{
+		return;
+	}
+
+	PlayAnimation(EliminatedInfoAnim,
+	              0.f,
+	              1,
+	              EUMGSequencePlayMode::Forward,
+	              1.f / PlayRate
+	);
+}
