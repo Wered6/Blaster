@@ -38,7 +38,7 @@ void ABlasterProjectileWeapon::Fire(const FVector& HitTargetLocation)
 
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = GetOwner();
-	SpawnParameters.Instigator = Cast<APawn>(GetOwner());
+	SpawnParameters.Instigator = GetOwner<APawn>();
 	GetWorld()->SpawnActor<ABlasterProjectile>(
 		ProjectileClass,
 		SocketTransform.GetLocation(),

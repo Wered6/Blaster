@@ -39,12 +39,11 @@ void UBlasterCombatComponent::BeginPlay()
 
 	if (BlasterCharacter->IsLocallyControlled())
 	{
-		BlasterPlayerController = Cast<ABlasterPlayerController>(BlasterCharacter->GetController());
 		if (!ensureMsgf(BlasterPlayerController.Get(), TEXT("Probably BlasterPlayerController is not set in Game Mode")))
 		{
 			return;
 		}
-		BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+		BlasterHUD = BlasterPlayerController->GetHUD<ABlasterHUD>();
 	}
 }
 
@@ -69,6 +68,11 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	if (!Weapon)
 	{
 		return;
+	}
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Drop();
 	}
 
 	ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
@@ -99,7 +103,6 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 void UBlasterCombatComponent::DropWeapon()
 {
 	// Called only on server
-
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->Drop();

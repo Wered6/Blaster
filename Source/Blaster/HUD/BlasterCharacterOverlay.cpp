@@ -59,3 +59,13 @@ void UBlasterCharacterOverlay::ShowEliminatedText(const float PlayRate)
 	              1.f / PlayRate
 	);
 }
+
+void UBlasterCharacterOverlay::SetWeaponAmmoAmountText(const int32 AmmoAmount) const
+{
+	if (!ensure(WeaponAmmoAmountText))
+	{
+		return;
+	}
+
+	WeaponAmmoAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), AmmoAmount)));
+}

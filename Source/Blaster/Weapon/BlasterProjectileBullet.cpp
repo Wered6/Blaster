@@ -18,7 +18,7 @@ void ABlasterProjectileBullet::OnHit(UPrimitiveComponent* HitComponent,
                                      FVector NormalImpulse,
                                      const FHitResult& Hit)
 {
-	ACharacter* OwnerCharacter{Cast<ACharacter>(GetOwner())};
+	ACharacter* OwnerCharacter{GetOwner<ACharacter>()};
 	if (!ensure(OwnerCharacter))
 	{
 		return;

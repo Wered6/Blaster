@@ -107,7 +107,7 @@ void ABlasterPlayerController::SetHUDDefeats(const int32 Defeats) const
 	BlasterCharacterOverlayRaw->SetDefeatsText(Defeats);
 }
 
-void ABlasterPlayerController::ShowEliminatedInfo(const float PlayRate) const
+void ABlasterPlayerController::ShowHUDEliminatedInfo(const float PlayRate) const
 {
 	UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
 	if (!ensureAlways(BlasterCharacterOverlayRaw))
@@ -116,4 +116,15 @@ void ABlasterPlayerController::ShowEliminatedInfo(const float PlayRate) const
 	}
 
 	BlasterCharacterOverlayRaw->ShowEliminatedText(PlayRate);
+}
+
+void ABlasterPlayerController::SetHUDWeaponAmmo(const int32 AmmoAmount) const
+{
+	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
+	if (!ensureAlways(BlasterCharacterOverlayRaw))
+	{
+		return;
+	}
+
+	BlasterCharacterOverlayRaw->SetWeaponAmmoAmountText(AmmoAmount);
 }

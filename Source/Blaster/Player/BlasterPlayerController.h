@@ -8,6 +8,7 @@
 
 class UBlasterCharacterOverlay;
 class ABlasterHUD;
+
 /**
  * 
  */
@@ -31,7 +32,9 @@ public:
 
 	void SetHUDDefeats(const int32 Defeats) const;
 
-	void ShowEliminatedInfo(float PlayRate) const;
+	void ShowHUDEliminatedInfo(const float PlayRate) const;
+	
+	void SetHUDWeaponAmmo(const int32 AmmoAmount) const;
 
 private:
 	bool bCharacterOverlayValid{false};

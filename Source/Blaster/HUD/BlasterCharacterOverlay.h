@@ -26,6 +26,8 @@ public:
 	void SetDefeatsText(const int32 Defeats) const;
 
 	void ShowEliminatedText(float PlayRate);
+	
+	void SetWeaponAmmoAmountText(const int32 AmmoAmount) const;
 
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -40,4 +42,7 @@ private:
 
 	UPROPERTY(Transient, meta=(BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> EliminatedInfoAnim;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> WeaponAmmoAmountText;
 };

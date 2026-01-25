@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "BlasterWeaponBase.generated.h"
 
+class ABlasterPlayerController;
+class ABlasterCharacter;
 class ABlasterCasing;
 class UWidgetComponent;
 class USphereComponent;
@@ -39,8 +41,10 @@ public:
 	void ShowPickUpWidget(const bool bShowWidget) const;
 
 	void SetWeaponState(const EBlasterWeaponState State);
-	
+
 	void Drop();
+
+	virtual void SetOwner(AActor* NewOwner) override;
 
 private:
 	UFUNCTION()
@@ -51,6 +55,26 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
 	TSubclassOf<ABlasterCasing> CasingClass;
+
+	UPROPERTY(BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	TObjectPtr<ABlasterCharacter> BlasterOwnerCharacter;
+	UPROPERTY(BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	TObjectPtr<ABlasterPlayerController> BlasterOwnerPlayerController;
+
+#pragma region Ammo
+
+private:
+	void SpendRound();
+
+	UFUNCTION()
+	void OnRep_Ammo();
+
+	UPROPERTY(EditDefaultsOnly, ReplicatedUsing=OnRep_Ammo, Category="Blaster|Ammo")
+	int32 Ammo;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Ammo")
+	int32 MagCapacity;
+
+#pragma endregion
 
 #pragma region Fire
 

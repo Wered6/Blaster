@@ -83,7 +83,8 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	BlasterPlayerController = GetController<ABlasterPlayerController>();
-	CombatComponent->BlasterHUD = Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+	CombatComponent->BlasterPlayerController = BlasterPlayerController;
+	CombatComponent->BlasterHUD = BlasterPlayerController->GetHUD<ABlasterHUD>();
 
 	if (!IsLocallyControlled())
 	{
@@ -155,6 +156,7 @@ void ABlasterCharacter::OnRep_Controller()
 
 	// Controller is only valid on server and controlled clients
 	BlasterPlayerController = GetController<ABlasterPlayerController>();
+	CombatComponent->BlasterPlayerController = BlasterPlayerController;
 }
 
 void ABlasterCharacter::Destroyed()
@@ -213,7 +215,7 @@ void ABlasterCharacter::Multicast_Eliminate_Implementation()
 
 	if (IsLocallyControlled())
 	{
-		BlasterPlayerController->ShowEliminatedInfo(EliminationDelay);
+		BlasterPlayerController->ShowHUDEliminatedInfo(EliminationDelay);
 	}
 }
 

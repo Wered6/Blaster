@@ -4,6 +4,7 @@
 #include "BlasterWeaponBase.h"
 #include "BlasterCasing.h"
 #include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/Player/BlasterPlayerController.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -40,6 +41,7 @@ void ABlasterWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABlasterWeaponBase, WeaponState)
+	DOREPLIFETIME(ABlasterWeaponBase, Ammo)
 }
 
 void ABlasterWeaponBase::BeginPlay()
@@ -99,6 +101,32 @@ void ABlasterWeaponBase::Drop()
 	SetOwner(nullptr);
 }
 
+void ABlasterWeaponBase::SetOwner(AActor* NewOwner)
+{
+	Super::SetOwner(NewOwner);
+
+	BlasterOwnerCharacter = Cast<ABlasterCharacter>(NewOwner);
+	const ABlasterCharacter* BlasterOwnerCharacterRaw{BlasterOwnerCharacter.Get()};
+	// when set owner to nullptr
+	if (BlasterOwnerCharacterRaw)
+	{
+		BlasterOwnerPlayerController = BlasterOwnerCharacterRaw->GetController<ABlasterPlayerController>();
+		if (BlasterOwnerCharacterRaw->IsLocallyControlled())
+		{
+			BlasterOwnerPlayerController->SetHUDWeaponAmmo(Ammo);
+		}
+	}
+	else
+	{
+		const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
+		{
+			BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(0);
+		}
+		BlasterOwnerPlayerController = nullptr;
+	}
+}
+
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterWeaponBase::OnRep_WeaponState()
 {
@@ -120,6 +148,27 @@ void ABlasterWeaponBase::OnRep_WeaponState()
 	}
 }
 
+void ABlasterWeaponBase::SpendRound()
+{
+	Ammo--;
+
+	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+	if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
+	{
+		BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(Ammo);
+	}
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ABlasterWeaponBase::OnRep_Ammo()
+{
+	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+	if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
+	{
+		BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(Ammo);
+	}
+}
+
 void ABlasterWeaponBase::Fire(const FVector& HitTargetLocation)
 {
 	if (!ensure(FireAnimation && CasingClass))
@@ -137,6 +186,11 @@ void ABlasterWeaponBase::Fire(const FVector& HitTargetLocation)
 
 	const FTransform SocketTransform{AmmoEjectSocket->GetSocketTransform(WeaponMeshComponent)};
 	GetWorld()->SpawnActor<ABlasterCasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
+
+	if (HasAuthority())
+	{
+		SpendRound();
+	}
 }
 
 void ABlasterWeaponBase::OnAreaSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
