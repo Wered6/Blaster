@@ -8,6 +8,7 @@
 
 #define TRACE_LENGTH 80000.f
 
+enum class EBlasterWeaponType : uint8;
 class IBlasterInteractWithCrosshairsInterface;
 class ABlasterHUD;
 class ABlasterPlayerController;
@@ -34,6 +35,19 @@ private:
 	TWeakObjectPtr<ABlasterCharacter> BlasterCharacter;
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
 	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
+
+#pragma region CarriedAmmo
+
+private:
+	UFUNCTION()
+	void OnRep_CarriedAmmo();
+
+	UPROPERTY(ReplicatedUsing=OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+
+	TMap<EBlasterWeaponType, int32> CarriedAmmoMap;
+
+#pragma endregion
 
 #pragma region Weapon
 
@@ -74,7 +88,7 @@ private:
 
 	void StartFireTimer();
 	void OnFireTimerCompleted();
-	
+
 	bool CanFire() const;
 
 	bool bFireButtonPressed;

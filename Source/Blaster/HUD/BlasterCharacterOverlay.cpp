@@ -69,3 +69,13 @@ void UBlasterCharacterOverlay::SetWeaponAmmoAmountText(const int32 AmmoAmount) c
 
 	WeaponAmmoAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), AmmoAmount)));
 }
+
+void UBlasterCharacterOverlay::SetCarriedAmmoAmountText(const int32 AmmoAmount) const
+{
+	if (!ensure(CarriedAmmoAmountText))
+	{
+		return;
+	}
+
+	CarriedAmmoAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), AmmoAmount)));
+}

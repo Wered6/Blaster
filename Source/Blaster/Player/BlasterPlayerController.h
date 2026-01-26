@@ -35,6 +35,7 @@ public:
 	void ShowHUDEliminatedInfo(const float PlayRate) const;
 	
 	void SetHUDWeaponAmmo(const int32 AmmoAmount) const;
+	void SetHUDCarriedAmmo(const int32 AmmoAmount) const;
 
 private:
 	bool bCharacterOverlayValid{false};

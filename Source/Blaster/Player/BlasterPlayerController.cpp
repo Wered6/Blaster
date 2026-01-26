@@ -128,3 +128,14 @@ void ABlasterPlayerController::SetHUDWeaponAmmo(const int32 AmmoAmount) const
 
 	BlasterCharacterOverlayRaw->SetWeaponAmmoAmountText(AmmoAmount);
 }
+
+void ABlasterPlayerController::SetHUDCarriedAmmo(const int32 AmmoAmount) const
+{
+	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
+	if (!ensureAlways(BlasterCharacterOverlayRaw))
+	{
+		return;
+	}
+
+	BlasterCharacterOverlayRaw->SetCarriedAmmoAmountText(AmmoAmount);
+}

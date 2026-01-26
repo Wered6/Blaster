@@ -27,6 +27,7 @@ void UBlasterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 
 	DOREPLIFETIME(UBlasterCombatComponent, EquippedWeapon)
 	DOREPLIFETIME(UBlasterCombatComponent, bAiming)
+	DOREPLIFETIME_CONDITION(UBlasterCombatComponent, CarriedAmmo, COND_OwnerOnly)
 }
 
 void UBlasterCombatComponent::BeginPlay()
@@ -61,6 +62,11 @@ void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 		InterpFOV(DeltaTime);
 	}
+}
+
+void UBlasterCombatComponent::OnRep_CarriedAmmo()
+{
+	
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
