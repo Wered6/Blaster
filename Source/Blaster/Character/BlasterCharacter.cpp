@@ -587,6 +587,11 @@ void ABlasterCharacter::PlayReloadMontage() const
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
+EBlasterCombatState ABlasterCharacter::GetCombatState() const
+{
+	return CombatComponent->CombatState;
+}
+
 void ABlasterCharacter::PlayHitReactMontage() const
 {
 	if (!ensure(HitReactMontage))

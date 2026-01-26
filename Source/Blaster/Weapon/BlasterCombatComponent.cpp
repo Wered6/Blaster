@@ -29,6 +29,7 @@ void UBlasterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(UBlasterCombatComponent, EquippedWeapon)
 	DOREPLIFETIME(UBlasterCombatComponent, bAiming)
 	DOREPLIFETIME_CONDITION(UBlasterCombatComponent, CarriedAmmo, COND_OwnerOnly)
+	DOREPLIFETIME(UBlasterCombatComponent, CombatState)
 }
 
 void UBlasterCombatComponent::BeginPlay()
@@ -66,6 +67,21 @@ void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		HitTargetLocation = HitResult.ImpactPoint;
 
 		InterpFOV(DeltaTime);
+	}
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UBlasterCombatComponent::OnRep_CombatState()
+{
+	switch (CombatState)
+	{
+	case EBlasterCombatState::Unoccupied:
+		break;
+	case EBlasterCombatState::Reloading:
+		HandleReload();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -221,13 +237,27 @@ bool UBlasterCombatComponent::CanFire() const
 
 void UBlasterCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0)
+	if (CarriedAmmo > 0 && CombatState != EBlasterCombatState::Reloading)
 	{
 		Server_Reload();
 	}
 }
 
+void UBlasterCombatComponent::FinishReloading()
+{
+	if (BlasterCharacter->HasAuthority())
+	{
+		CombatState = EBlasterCombatState::Unoccupied;
+	}
+}
+
 void UBlasterCombatComponent::Server_Reload_Implementation()
+{
+	CombatState = EBlasterCombatState::Reloading;
+	HandleReload();
+}
+
+void UBlasterCombatComponent::HandleReload() const
 {
 	BlasterCharacter->PlayReloadMontage();
 }

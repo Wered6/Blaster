@@ -168,6 +168,12 @@ protected:
 		return bRotateRootBone;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool DoesUseFABRIK() const
+	{
+		return bUseFABRIK;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=GetSpeed, Category="Blaster|Movement")
 	float Speed;
@@ -202,6 +208,9 @@ private:
 
 	UPROPERTY(BlueprintGetter=ShouldRotateRootBone, Category="Blaster|Movement")
 	bool bRotateRootBone;
+
+	UPROPERTY(BlueprintGetter=DoesUseFABRIK, Category="Blaster|Movement")
+	bool bUseFABRIK;
 
 #pragma endregion
 };

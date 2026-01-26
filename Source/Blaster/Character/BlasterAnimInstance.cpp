@@ -3,6 +3,7 @@
 
 #include "BlasterAnimInstance.h"
 #include "BlasterCharacter.h"
+#include "Blaster/Weapon/BlasterCombatState.h"
 #include "Blaster/Weapon/BlasterWeaponBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -89,4 +90,6 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaSeconds, 30.f);
 		}
 	}
+
+	bUseFABRIK = BlasterCharacter->GetCombatState() != EBlasterCombatState::Reloading;
 }

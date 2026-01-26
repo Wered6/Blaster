@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+enum class EBlasterCombatState : uint8;
 class UTimelineComponent;
 class ABlasterPlayerController;
 enum class ETurningInPlace : uint8;
@@ -198,11 +199,13 @@ public:
 	bool IsAiming() const;
 
 	ABlasterWeaponBase* GetEquippedWeapon() const;
-	
+
 	FVector GetHitTargetLocation() const;
-	
+
 	void PlayFireMontage(const bool bAiming) const;
 	void PlayReloadMontage() const;
+
+	EBlasterCombatState GetCombatState() const;
 
 private:
 	void PlayHitReactMontage() const;
@@ -284,6 +287,7 @@ public:
 		return CameraComponent;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
 	FORCEINLINE UBlasterCombatComponent* GetCombatComponent() const
 	{
 		return CombatComponent;
@@ -296,7 +300,7 @@ private:
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> CameraComponent;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetCombatComponent, Category="Blaster|Components")
 	TObjectPtr<UBlasterCombatComponent> CombatComponent;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTimelineComponent> DissolveTimelineComponent;

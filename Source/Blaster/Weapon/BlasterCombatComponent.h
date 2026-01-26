@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BlasterCombatState.h"
 #include "Components/ActorComponent.h"
 #include "BlasterCombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
 
+enum class EBlasterCombatState : uint8;
 enum class EBlasterWeaponType : uint8;
 class IBlasterInteractWithCrosshairsInterface;
 class ABlasterHUD;
@@ -30,8 +32,14 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 private:
+	UFUNCTION()
+	void OnRep_CombatState();
+	
+	UPROPERTY(ReplicatedUsing=OnRep_CombatState)
+	EBlasterCombatState CombatState{EBlasterCombatState::Unoccupied};
+	
 	TWeakObjectPtr<ABlasterCharacter> BlasterCharacter;
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
 	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
@@ -149,9 +157,14 @@ private:
 public:
 	void Reload();
 	
+	UFUNCTION(BlueprintCallable, Category="Blaster|Reload")
+	void FinishReloading();
+	
 private:
 	UFUNCTION(Server, Reliable)
 	void Server_Reload();
+	
+	void HandleReload() const;
 
 #pragma endregion
 
