@@ -76,6 +76,10 @@ void UBlasterCombatComponent::OnRep_CombatState()
 	switch (CombatState)
 	{
 	case EBlasterCombatState::Unoccupied:
+		if (bFireButtonPressed)
+		{
+			Fire();
+		}
 		break;
 	case EBlasterCombatState::Reloading:
 		HandleReload();
@@ -184,6 +188,16 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 	}
 }
 
+bool UBlasterCombatComponent::CanFire() const
+{
+	if (!EquippedWeapon)
+	{
+		return false;
+	}
+
+	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == EBlasterCombatState::Unoccupied;
+}
+
 void UBlasterCombatComponent::FireStart()
 {
 	if (!EquippedWeapon)
@@ -211,6 +225,20 @@ void UBlasterCombatComponent::Fire()
 	}
 }
 
+void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
+{
+	Multicast_Fire(TraceHitTargetLocation);
+}
+
+void UBlasterCombatComponent::Multicast_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
+{
+	if (CombatState == EBlasterCombatState::Unoccupied)
+	{
+		BlasterCharacter->PlayFireMontage(bAiming);
+		EquippedWeapon->Fire(TraceHitTargetLocation);
+	}
+}
+
 void UBlasterCombatComponent::StartFireTimer()
 {
 	GetWorld()->GetTimerManager().SetTimer(FireTimer, this, &UBlasterCombatComponent::OnFireTimerCompleted, EquippedWeapon->GetFireDelay());
@@ -223,54 +251,6 @@ void UBlasterCombatComponent::OnFireTimerCompleted()
 	{
 		Fire();
 	}
-}
-
-bool UBlasterCombatComponent::CanFire() const
-{
-	if (!EquippedWeapon)
-	{
-		return false;
-	}
-
-	return !EquippedWeapon->IsEmpty() || !bCanFire;
-}
-
-void UBlasterCombatComponent::Reload()
-{
-	if (CarriedAmmo > 0 && CombatState != EBlasterCombatState::Reloading)
-	{
-		Server_Reload();
-	}
-}
-
-void UBlasterCombatComponent::FinishReloading()
-{
-	if (BlasterCharacter->HasAuthority())
-	{
-		CombatState = EBlasterCombatState::Unoccupied;
-	}
-}
-
-void UBlasterCombatComponent::Server_Reload_Implementation()
-{
-	CombatState = EBlasterCombatState::Reloading;
-	HandleReload();
-}
-
-void UBlasterCombatComponent::HandleReload() const
-{
-	BlasterCharacter->PlayReloadMontage();
-}
-
-void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
-{
-	Multicast_Fire(TraceHitTargetLocation);
-}
-
-void UBlasterCombatComponent::Multicast_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
-{
-	BlasterCharacter->PlayFireMontage(bAiming);
-	EquippedWeapon->Fire(TraceHitTargetLocation);
 }
 
 void UBlasterCombatComponent::SetAiming(const bool bInAiming)
@@ -388,4 +368,35 @@ void UBlasterCombatComponent::SetCrosshairsSpread(const float DeltaTime)
 		return;
 	}
 	BlasterHUD->SetCrosshairsSpread(CrosshairSpread);
+}
+
+void UBlasterCombatComponent::Reload()
+{
+	if (CarriedAmmo > 0 && CombatState != EBlasterCombatState::Reloading)
+	{
+		Server_Reload();
+	}
+}
+
+void UBlasterCombatComponent::FinishReloading()
+{
+	if (BlasterCharacter->HasAuthority())
+	{
+		CombatState = EBlasterCombatState::Unoccupied;
+	}
+	if (bFireButtonPressed)
+	{
+		Fire();
+	}
+}
+
+void UBlasterCombatComponent::Server_Reload_Implementation()
+{
+	CombatState = EBlasterCombatState::Reloading;
+	HandleReload();
+}
+
+void UBlasterCombatComponent::HandleReload() const
+{
+	BlasterCharacter->PlayReloadMontage();
 }

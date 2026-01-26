@@ -86,6 +86,8 @@ private:
 #pragma region Fire
 
 private:
+	bool CanFire() const;
+	
 	void FireStart();
 	void FireStop();
 	void Fire();
@@ -96,9 +98,7 @@ private:
 	void Multicast_Fire(const FVector_NetQuantize& TraceHitTargetLocation);
 
 	void StartFireTimer();
-	void OnFireTimerCompleted();
-
-	bool CanFire() const;
+	void OnFireTimerCompleted();	
 
 	bool bFireButtonPressed;
 
