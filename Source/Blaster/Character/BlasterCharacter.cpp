@@ -11,6 +11,7 @@
 #include "Blaster/Player/BlasterPlayerController.h"
 #include "Blaster/Weapon/BlasterCombatComponent.h"
 #include "Blaster/Weapon/BlasterWeaponBase.h"
+#include "Blaster/Weapon/BlasterWeaponTypes.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -164,7 +165,7 @@ void ABlasterCharacter::Destroyed()
 	Super::Destroyed();
 
 	// `if check` only because Destroyed is getting called also when opening/closing blueprint,
-	// and this component is obviously nullptr in that moment 
+	// and this component is obviously nullptr at that moment 
 	if (EliminationBotParticleSystemComponent)
 	{
 		EliminationBotParticleSystemComponent->DestroyComponent();
@@ -354,7 +355,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (!ensure(MoveAction && LookAction && JumpAction && EquipAction && CrouchAction && AimAction && FireAction))
+	if (!ensure(MoveAction && LookAction && JumpAction && EquipAction && CrouchAction && AimAction && FireAction && ReloadAction))
 	{
 		return;
 	}
@@ -377,6 +378,8 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABlasterCharacter::FireStart);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABlasterCharacter::FireStop);
+
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ABlasterCharacter::Reload);
 	}
 }
 
@@ -480,6 +483,12 @@ void ABlasterCharacter::FireStop()
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ABlasterCharacter::Reload()
+{
+	CombatComponent->Reload();
+}
+
 void ABlasterCharacter::Jump()
 {
 	if (bIsCrouched)
@@ -531,6 +540,11 @@ ABlasterWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 	return CombatComponent->EquippedWeapon;
 }
 
+FVector ABlasterCharacter::GetHitTargetLocation() const
+{
+	return CombatComponent->HitTargetLocation;
+}
+
 void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
 {
 	if (!ensure(FireWeaponMontage))
@@ -544,13 +558,33 @@ void ABlasterCharacter::PlayFireMontage(const bool bAiming) const
 
 	UAnimInstance* AnimInstance{GetMesh()->GetAnimInstance()};
 	AnimInstance->Montage_Play(FireWeaponMontage);
-	const FName SectionName = FName(bAiming ? "RifleAim" : "RifleHip");
-	AnimInstance->Montage_JumpToSection(SectionName);
+	AnimInstance->Montage_JumpToSection(FName(bAiming ? "RifleAim" : "RifleHip"));
 }
 
-FVector ABlasterCharacter::GetHitTargetLocation() const
+void ABlasterCharacter::PlayReloadMontage() const
 {
-	return CombatComponent->HitTargetLocation;
+	if (!ensure(ReloadMontage))
+	{
+		return;
+	}
+	if (!CombatComponent->EquippedWeapon)
+	{
+		return;
+	}
+
+	FName SectionName;
+	const EBlasterWeaponType WeaponType{CombatComponent->EquippedWeapon->GetWeaponType()};
+	switch (WeaponType)
+	{
+	case EBlasterWeaponType::AssaultRifle:
+		SectionName = "Rifle";
+		break;
+	default:
+		break;
+	}
+	UAnimInstance* AnimInstance{GetMesh()->GetAnimInstance()};
+	AnimInstance->Montage_Play(ReloadMontage);
+	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
 void ABlasterCharacter::PlayHitReactMontage() const
@@ -566,8 +600,7 @@ void ABlasterCharacter::PlayHitReactMontage() const
 
 	UAnimInstance* AnimInstance{GetMesh()->GetAnimInstance()};
 	AnimInstance->Montage_Play(HitReactMontage);
-	const FName SectionName{"FromFront"};
-	AnimInstance->Montage_JumpToSection(SectionName);
+	AnimInstance->Montage_JumpToSection(FName("FromFront"));
 }
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef

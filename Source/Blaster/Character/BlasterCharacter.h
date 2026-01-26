@@ -159,13 +159,14 @@ public:
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	virtual void Jump() override;
 	void Equip();
 	void Crouch();
 	void AimStart();
 	void AimStop();
 	void FireStart();
 	void FireStop();
-	virtual void Jump() override;
+	void Reload();
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -184,6 +185,8 @@ private:
 	TObjectPtr<UInputAction> AimAction;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
 	TObjectPtr<UInputAction> FireAction;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Input")
+	TObjectPtr<UInputAction> ReloadAction;
 
 #pragma endregion
 
@@ -195,10 +198,11 @@ public:
 	bool IsAiming() const;
 
 	ABlasterWeaponBase* GetEquippedWeapon() const;
-
-	void PlayFireMontage(const bool bAiming) const;
-
+	
 	FVector GetHitTargetLocation() const;
+	
+	void PlayFireMontage(const bool bAiming) const;
+	void PlayReloadMontage() const;
 
 private:
 	void PlayHitReactMontage() const;
@@ -216,6 +220,8 @@ private:
 	TObjectPtr<UAnimMontage> FireWeaponMontage;
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Combat")
+	TObjectPtr<UAnimMontage> ReloadMontage;
 
 #pragma endregion
 

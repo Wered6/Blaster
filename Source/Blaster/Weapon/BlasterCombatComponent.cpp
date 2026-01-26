@@ -219,6 +219,19 @@ bool UBlasterCombatComponent::CanFire() const
 	return !EquippedWeapon->IsEmpty() || !bCanFire;
 }
 
+void UBlasterCombatComponent::Reload()
+{
+	if (CarriedAmmo > 0)
+	{
+		Server_Reload();
+	}
+}
+
+void UBlasterCombatComponent::Server_Reload_Implementation()
+{
+	BlasterCharacter->PlayReloadMontage();
+}
+
 void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)
 {
 	Multicast_Fire(TraceHitTargetLocation);

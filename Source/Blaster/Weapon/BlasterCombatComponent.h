@@ -75,16 +75,6 @@ private:
 
 #pragma endregion
 
-#pragma region Movement
-
-private:
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
-	float BaseWalkSpeed;
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
-	float AimWalkSpeed;
-
-#pragma endregion
-
 #pragma region Fire
 
 private:
@@ -151,6 +141,27 @@ private:
 	IBlasterInteractWithCrosshairsInterface* TargetActor;
 
 	FVector HitTargetLocation;
+
+#pragma endregion
+
+#pragma region Reload
+	
+public:
+	void Reload();
+	
+private:
+	UFUNCTION(Server, Reliable)
+	void Server_Reload();
+
+#pragma endregion
+
+#pragma region Movement
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
+	float BaseWalkSpeed;
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Movement")
+	float AimWalkSpeed;
 
 #pragma endregion
 };
