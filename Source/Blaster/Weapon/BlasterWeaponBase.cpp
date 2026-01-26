@@ -3,6 +3,7 @@
 
 #include "BlasterWeaponBase.h"
 #include "BlasterCasing.h"
+#include "BlasterCombatComponent.h"
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/Player/BlasterPlayerController.h"
 #include "Components/SphereComponent.h"
@@ -59,6 +60,35 @@ void ABlasterWeaponBase::BeginPlay()
 	PickUpWidgetComponent->SetVisibility(false);
 }
 
+void ABlasterWeaponBase::SetOwner(AActor* NewOwner)
+{
+	Super::SetOwner(NewOwner);
+
+	BlasterOwnerCharacter = Cast<ABlasterCharacter>(NewOwner);
+	const ABlasterCharacter* BlasterOwnerCharacterRaw{BlasterOwnerCharacter.Get()};
+	// when set owner to nullptr
+	if (BlasterOwnerCharacterRaw)
+	{
+		BlasterOwnerPlayerController = BlasterOwnerCharacterRaw->GetController<ABlasterPlayerController>();
+		const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+		if (BlasterOwnerCharacterRaw->IsLocallyControlled())
+		{
+			BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(Ammo);
+			BlasterOwnerPlayerControllerRaw->SetHUDCarriedAmmo(BlasterOwnerCharacterRaw->GetCombatComponent()->GetCarriedAmmo());
+		}
+	}
+	else
+	{
+		const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
+		{
+			BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(0);
+			BlasterOwnerPlayerControllerRaw->SetHUDCarriedAmmo(0);
+		}
+		BlasterOwnerPlayerController = nullptr;
+	}
+}
+
 void ABlasterWeaponBase::ShowPickUpWidget(const bool bShowWidget) const
 {
 	if (PickUpWidgetComponent)
@@ -99,32 +129,6 @@ void ABlasterWeaponBase::Drop()
 	SetWeaponState(EBlasterWeaponState::Dropped);
 	WeaponMeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	SetOwner(nullptr);
-}
-
-void ABlasterWeaponBase::SetOwner(AActor* NewOwner)
-{
-	Super::SetOwner(NewOwner);
-
-	BlasterOwnerCharacter = Cast<ABlasterCharacter>(NewOwner);
-	const ABlasterCharacter* BlasterOwnerCharacterRaw{BlasterOwnerCharacter.Get()};
-	// when set owner to nullptr
-	if (BlasterOwnerCharacterRaw)
-	{
-		BlasterOwnerPlayerController = BlasterOwnerCharacterRaw->GetController<ABlasterPlayerController>();
-		if (BlasterOwnerCharacterRaw->IsLocallyControlled())
-		{
-			BlasterOwnerPlayerController->SetHUDWeaponAmmo(Ammo);
-		}
-	}
-	else
-	{
-		const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
-		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
-		{
-			BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(0);
-		}
-		BlasterOwnerPlayerController = nullptr;
-	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

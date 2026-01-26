@@ -36,11 +36,22 @@ private:
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
 	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
 
-#pragma region CarriedAmmo
+#pragma region Carried Ammo
+
+public:
+	FORCEINLINE int32 GetCarriedAmmo() const
+	{
+		return CarriedAmmo;
+	}
 
 private:
+	void InitializeCarriedAmmo();
+
 	UFUNCTION()
 	void OnRep_CarriedAmmo();
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Carried Ammo")
+	int32 StartingARAmmo{30};
 
 	UPROPERTY(ReplicatedUsing=OnRep_CarriedAmmo)
 	int32 CarriedAmmo;

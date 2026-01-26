@@ -163,7 +163,12 @@ void ABlasterCharacter::Destroyed()
 {
 	Super::Destroyed();
 
-	EliminationBotParticleSystemComponent->DestroyComponent();
+	// `if check` only because Destroyed is getting called also when opening/closing blueprint,
+	// and this component is obviously nullptr in that moment 
+	if (EliminationBotParticleSystemComponent)
+	{
+		EliminationBotParticleSystemComponent->DestroyComponent();
+	}
 }
 
 void ABlasterCharacter::Multicast_Eliminate_Implementation()

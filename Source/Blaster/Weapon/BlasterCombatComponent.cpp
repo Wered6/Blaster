@@ -3,6 +3,7 @@
 
 #include "BlasterCombatComponent.h"
 #include "BlasterWeaponBase.h"
+#include "BlasterWeaponTypes.h"
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/HUD/BlasterHUD.h"
 #include "Blaster/Player/BlasterPlayerController.h"
@@ -46,6 +47,10 @@ void UBlasterCombatComponent::BeginPlay()
 		}
 		BlasterHUD = BlasterPlayerController->GetHUD<ABlasterHUD>();
 	}
+	if (BlasterCharacter->HasAuthority())
+	{
+		InitializeCarriedAmmo();
+	}
 }
 
 void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -64,9 +69,15 @@ void UBlasterCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	}
 }
 
+void UBlasterCombatComponent::InitializeCarriedAmmo()
+{
+	CarriedAmmoMap.Emplace(EBlasterWeaponType::AssaultRifle, StartingARAmmo);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
 void UBlasterCombatComponent::OnRep_CarriedAmmo()
 {
-	
+	BlasterPlayerController->SetHUDCarriedAmmo(CarriedAmmo);
 }
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
@@ -91,6 +102,12 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 		return;
 	}
 	HandSocket->AttachActor(EquippedWeapon, BlasterCharacterRaw->GetMesh());
+
+	const EBlasterWeaponType EquippedWeaponType{EquippedWeapon->GetWeaponType()};
+	if (CarriedAmmoMap.Contains(EquippedWeaponType))
+	{
+		CarriedAmmo = CarriedAmmoMap[EquippedWeaponType];
+	}
 
 	EquippedWeapon->SetOwner(BlasterCharacterRaw);
 

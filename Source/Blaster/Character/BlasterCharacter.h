@@ -278,6 +278,11 @@ public:
 		return CameraComponent;
 	}
 
+	FORCEINLINE UBlasterCombatComponent* GetCombatComponent() const
+	{
+		return CombatComponent;
+	}
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;

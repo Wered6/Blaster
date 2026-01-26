@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "BlasterWeaponBase.generated.h"
 
+enum class EBlasterWeaponType : uint8;
 class ABlasterPlayerController;
 class ABlasterCharacter;
 class ABlasterCasing;
@@ -38,17 +39,25 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void SetOwner(AActor* NewOwner) override;
+
 	void ShowPickUpWidget(const bool bShowWidget) const;
 
 	void SetWeaponState(const EBlasterWeaponState State);
 
 	void Drop();
 
-	virtual void SetOwner(AActor* NewOwner) override;
+	FORCEINLINE EBlasterWeaponType GetWeaponType() const
+	{
+		return WeaponType;
+	}
 
 private:
 	UFUNCTION()
 	void OnRep_WeaponState();
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
+	EBlasterWeaponType WeaponType;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_WeaponState, Category="Blaster|Weapon Properties")
 	EBlasterWeaponState WeaponState;
@@ -56,10 +65,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
 	TSubclassOf<ABlasterCasing> CasingClass;
 
-	UPROPERTY(BlueprintReadWrite, meta=(AllowPrivateAccess=true))
-	TObjectPtr<ABlasterCharacter> BlasterOwnerCharacter;
-	UPROPERTY(BlueprintReadWrite, meta=(AllowPrivateAccess=true))
-	TObjectPtr<ABlasterPlayerController> BlasterOwnerPlayerController;
+	TWeakObjectPtr<ABlasterCharacter> BlasterOwnerCharacter;
+	TWeakObjectPtr<ABlasterPlayerController> BlasterOwnerPlayerController;
 
 #pragma region Ammo
 
