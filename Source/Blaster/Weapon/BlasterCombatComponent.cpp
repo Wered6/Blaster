@@ -163,7 +163,7 @@ void UBlasterCombatComponent::FireStop()
 
 void UBlasterCombatComponent::Fire()
 {
-	if (bCanFire)
+	if (CanFire())
 	{
 		bCanFire = false;
 		Server_Fire(HitTargetLocation);
@@ -184,6 +184,16 @@ void UBlasterCombatComponent::OnFireTimerCompleted()
 	{
 		Fire();
 	}
+}
+
+bool UBlasterCombatComponent::CanFire() const
+{
+	if (!EquippedWeapon)
+	{
+		return false;
+	}
+
+	return !EquippedWeapon->IsEmpty() || !bCanFire;
 }
 
 void UBlasterCombatComponent::Server_Fire_Implementation(const FVector_NetQuantize& TraceHitTargetLocation)

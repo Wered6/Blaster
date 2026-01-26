@@ -150,7 +150,10 @@ void ABlasterWeaponBase::OnRep_WeaponState()
 
 void ABlasterWeaponBase::SpendRound()
 {
-	Ammo--;
+	if (Ammo > 0)
+	{
+		Ammo--;
+	}
 
 	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
 	if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())

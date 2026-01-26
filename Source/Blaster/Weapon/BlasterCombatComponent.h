@@ -74,6 +74,8 @@ private:
 
 	void StartFireTimer();
 	void OnFireTimerCompleted();
+	
+	bool CanFire() const;
 
 	bool bFireButtonPressed;
 
