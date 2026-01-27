@@ -44,7 +44,7 @@ private:
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;
 	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
 
-#pragma region Carried Ammo
+#pragma region Ammo
 
 public:
 	FORCEINLINE int32 GetCarriedAmmo() const
@@ -57,8 +57,10 @@ private:
 
 	UFUNCTION()
 	void OnRep_CarriedAmmo();
+	
+	void UpdateAmmoValues();
 
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Carried Ammo")
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Ammo")
 	int32 StartingARAmmo{30};
 
 	UPROPERTY(ReplicatedUsing=OnRep_CarriedAmmo)
@@ -165,6 +167,8 @@ private:
 	void Server_Reload();
 	
 	void HandleReload() const;
+	
+	int32 AmountToReload();
 
 #pragma endregion
 

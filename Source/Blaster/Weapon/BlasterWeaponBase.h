@@ -40,6 +40,7 @@ protected:
 
 public:
 	virtual void SetOwner(AActor* NewOwner) override;
+	
 
 	void ShowPickUpWidget(const bool bShowWidget) const;
 
@@ -51,6 +52,9 @@ public:
 	{
 		return WeaponType;
 	}
+	
+protected:
+	virtual void OnRep_Owner() override;
 
 private:
 	UFUNCTION()
@@ -76,7 +80,22 @@ public:
 		return Ammo <= 0;
 	}
 
+	FORCEINLINE int32 GetAmmo() const
+	{
+		return Ammo;
+	}
+
+	FORCEINLINE int32 GetMagCapacity() const
+	{
+		return MagCapacity;
+	}
+	
+	void AddAmmo(const int32 AmmoToAdd);
+
 private:
+	void SetHUDWeaponAmmo(const int32 AmmoAmount) const;
+	void SetHUDCarriedAmmo(const int32 AmmoAmount) const;
+	
 	void SpendRound();
 
 	UFUNCTION()

@@ -100,6 +100,21 @@ void UBlasterCombatComponent::OnRep_CarriedAmmo()
 	BlasterPlayerController->SetHUDCarriedAmmo(CarriedAmmo);
 }
 
+void UBlasterCombatComponent::UpdateAmmoValues()
+{
+	const EBlasterWeaponType EquippedWeaponType{EquippedWeapon->GetWeaponType()};
+	if (!CarriedAmmoMap.Contains(EquippedWeaponType))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: CarriedAmmoMap doesn't contain EquippedWeaponType"), TEXT(__FUNCTION__))
+		return;
+	}
+
+	const int32 ReloadAmount{AmountToReload()};
+	CarriedAmmoMap[EquippedWeaponType] -= ReloadAmount;
+	CarriedAmmo = CarriedAmmoMap[EquippedWeaponType];
+	EquippedWeapon->AddAmmo(-ReloadAmount);
+}
+
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
 	if (!Weapon)
@@ -124,10 +139,12 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	HandSocket->AttachActor(EquippedWeapon, BlasterCharacterRaw->GetMesh());
 
 	const EBlasterWeaponType EquippedWeaponType{EquippedWeapon->GetWeaponType()};
-	if (CarriedAmmoMap.Contains(EquippedWeaponType))
+	if (!CarriedAmmoMap.Contains(EquippedWeaponType))
 	{
-		CarriedAmmo = CarriedAmmoMap[EquippedWeaponType];
+		UE_LOG(LogTemp, Warning, TEXT("%s: CarriedAmmoMap doesn't contain EquippedWeaponType"), TEXT(__FUNCTION__))
+		return;
 	}
+	CarriedAmmo = CarriedAmmoMap[EquippedWeaponType];
 
 	EquippedWeapon->SetOwner(BlasterCharacterRaw);
 
@@ -382,6 +399,7 @@ void UBlasterCombatComponent::FinishReloading()
 {
 	if (BlasterCharacter->HasAuthority())
 	{
+		UpdateAmmoValues();
 		CombatState = EBlasterCombatState::Unoccupied;
 	}
 	if (bFireButtonPressed)
@@ -399,4 +417,13 @@ void UBlasterCombatComponent::Server_Reload_Implementation()
 void UBlasterCombatComponent::HandleReload() const
 {
 	BlasterCharacter->PlayReloadMontage();
+}
+
+int32 UBlasterCombatComponent::AmountToReload()
+{
+	const int32 RoomInMag{EquippedWeapon->GetMagCapacity() - EquippedWeapon->GetAmmo()};
+	const int32 CarriedAmmoAmount{CarriedAmmoMap[EquippedWeapon->GetWeaponType()]};
+	const int32 Least{FMath::Min(RoomInMag, CarriedAmmoAmount)};
+
+	return Least;
 }

@@ -66,24 +66,25 @@ void ABlasterWeaponBase::SetOwner(AActor* NewOwner)
 
 	BlasterOwnerCharacter = Cast<ABlasterCharacter>(NewOwner);
 	const ABlasterCharacter* BlasterOwnerCharacterRaw{BlasterOwnerCharacter.Get()};
-	// when set owner to nullptr
+	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+	
 	if (BlasterOwnerCharacterRaw)
 	{
 		BlasterOwnerPlayerController = BlasterOwnerCharacterRaw->GetController<ABlasterPlayerController>();
-		const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
-		if (BlasterOwnerCharacterRaw->IsLocallyControlled())
+		BlasterOwnerPlayerControllerRaw = BlasterOwnerPlayerController.Get();
+		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->HasAuthority())
 		{
-			BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(Ammo);
-			BlasterOwnerPlayerControllerRaw->SetHUDCarriedAmmo(BlasterOwnerCharacterRaw->GetCombatComponent()->GetCarriedAmmo());
+			SetHUDWeaponAmmo(Ammo);
+			SetHUDCarriedAmmo(BlasterOwnerCharacterRaw->GetCombatComponent()->GetCarriedAmmo());
 		}
 	}
+	// when set owner to nullptr
 	else
 	{
-		const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
-		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
+		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->HasAuthority())
 		{
-			BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(0);
-			BlasterOwnerPlayerControllerRaw->SetHUDCarriedAmmo(0);
+			SetHUDWeaponAmmo(0);
+			SetHUDCarriedAmmo(0);
 		}
 		BlasterOwnerPlayerController = nullptr;
 	}
@@ -126,9 +127,26 @@ void ABlasterWeaponBase::SetWeaponState(const EBlasterWeaponState State)
 
 void ABlasterWeaponBase::Drop()
 {
+	SetOwner(nullptr);
 	SetWeaponState(EBlasterWeaponState::Dropped);
 	WeaponMeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	SetOwner(nullptr);
+}
+
+void ABlasterWeaponBase::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+
+	const ABlasterCharacter* BlasterOwnerCharacterRaw{BlasterOwnerCharacter.Get()};
+	if (BlasterOwnerCharacterRaw)
+	{
+		SetHUDWeaponAmmo(Ammo);
+		SetHUDCarriedAmmo(BlasterOwnerCharacterRaw->GetCombatComponent()->GetCarriedAmmo());
+	}
+	else
+	{
+		SetHUDWeaponAmmo(0);
+		SetHUDCarriedAmmo(0);
+	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -152,6 +170,32 @@ void ABlasterWeaponBase::OnRep_WeaponState()
 	}
 }
 
+void ABlasterWeaponBase::AddAmmo(const int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo - AmmoToAdd, 0, MagCapacity);
+
+	SetHUDWeaponAmmo(Ammo);
+	SetHUDCarriedAmmo(BlasterOwnerCharacter->GetCombatComponent()->GetCarriedAmmo());
+}
+
+void ABlasterWeaponBase::SetHUDWeaponAmmo(const int32 AmmoAmount) const
+{
+	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+	if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
+	{
+		BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(AmmoAmount);
+	}
+}
+
+void ABlasterWeaponBase::SetHUDCarriedAmmo(const int32 AmmoAmount) const
+{
+	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
+	if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
+	{
+		BlasterOwnerPlayerControllerRaw->SetHUDCarriedAmmo(AmmoAmount);
+	}
+}
+
 void ABlasterWeaponBase::SpendRound()
 {
 	if (Ammo > 0)
@@ -159,21 +203,13 @@ void ABlasterWeaponBase::SpendRound()
 		Ammo--;
 	}
 
-	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
-	if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
-	{
-		BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(Ammo);
-	}
+	SetHUDWeaponAmmo(Ammo);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterWeaponBase::OnRep_Ammo()
 {
-	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
-	if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->IsLocalController())
-	{
-		BlasterOwnerPlayerControllerRaw->SetHUDWeaponAmmo(Ammo);
-	}
+	SetHUDWeaponAmmo(Ammo);
 }
 
 void ABlasterWeaponBase::Fire(const FVector& HitTargetLocation)
