@@ -174,6 +174,18 @@ protected:
 		return bUseFABRIK;
 	}
 
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool DoesUseAimOffsets() const
+	{
+		return bUseAimOffsets;
+	}
+
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool ShouldTransformRightHand() const
+	{
+		return bTransformRightHand;
+	}
+
 private:
 	UPROPERTY(BlueprintGetter=GetSpeed, Category="Blaster|Movement")
 	float Speed;
@@ -211,6 +223,12 @@ private:
 
 	UPROPERTY(BlueprintGetter=DoesUseFABRIK, Category="Blaster|Movement")
 	bool bUseFABRIK;
+
+	UPROPERTY(BlueprintGetter=DoesUseAimOffsets, Category="Blaster|Movement")
+	bool bUseAimOffsets;
+
+	UPROPERTY(BlueprintGetter=ShouldTransformRightHand, Category="Blaster|Movement")
+	bool bTransformRightHand;
 
 #pragma endregion
 };

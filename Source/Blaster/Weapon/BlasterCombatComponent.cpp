@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Sound/SoundCue.h"
 
 
 UBlasterCombatComponent::UBlasterCombatComponent()
@@ -117,7 +118,7 @@ void UBlasterCombatComponent::UpdateAmmoValues()
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
-	if (!Weapon)
+	if (!ensure(Weapon->GetEquipSound()))
 	{
 		return;
 	}
@@ -147,6 +148,12 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 	CarriedAmmo = CarriedAmmoMap[EquippedWeaponType];
 
 	EquippedWeapon->SetOwner(BlasterCharacterRaw);
+
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		EquippedWeapon->GetEquipSound(),
+		BlasterCharacter->GetActorLocation()
+	);
 
 	BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
 	BlasterCharacterRaw->bUseControllerRotationYaw = true;
@@ -198,6 +205,13 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 
 	BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
 	BlasterCharacterRaw->bUseControllerRotationYaw = true;
+
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		EquippedWeapon->GetEquipSound(),
+
+		BlasterCharacter->GetActorLocation()
+	);
 
 	if (BlasterCharacterRaw->IsLocallyControlled())
 	{

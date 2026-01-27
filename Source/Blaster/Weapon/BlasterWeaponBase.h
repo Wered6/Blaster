@@ -40,7 +40,6 @@ protected:
 
 public:
 	virtual void SetOwner(AActor* NewOwner) override;
-	
 
 	void ShowPickUpWidget(const bool bShowWidget) const;
 
@@ -52,7 +51,12 @@ public:
 	{
 		return WeaponType;
 	}
-	
+
+	FORCEINLINE USoundCue* GetEquipSound() const
+	{
+		return EquipSound;
+	}
+
 protected:
 	virtual void OnRep_Owner() override;
 
@@ -68,6 +72,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
 	TSubclassOf<ABlasterCasing> CasingClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Weapon Properties")
+	TObjectPtr<USoundCue> EquipSound;
 
 	TWeakObjectPtr<ABlasterCharacter> BlasterOwnerCharacter;
 	TWeakObjectPtr<ABlasterPlayerController> BlasterOwnerPlayerController;
@@ -89,13 +96,13 @@ public:
 	{
 		return MagCapacity;
 	}
-	
+
 	void AddAmmo(const int32 AmmoToAdd);
 
 private:
 	void SetHUDWeaponAmmo(const int32 AmmoAmount) const;
 	void SetHUDCarriedAmmo(const int32 AmmoAmount) const;
-	
+
 	void SpendRound();
 
 	UFUNCTION()
