@@ -102,6 +102,7 @@ private:
 	void StartFireTimer();
 	void OnFireTimerCompleted();	
 
+	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	bool bFireButtonPressed;
 
 	FTimerHandle FireTimer;

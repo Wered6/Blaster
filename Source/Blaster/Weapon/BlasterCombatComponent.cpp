@@ -118,6 +118,11 @@ void UBlasterCombatComponent::UpdateAmmoValues()
 
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
+	if (!Weapon)
+	{
+		return;
+	}
+
 	if (!ensure(Weapon->GetEquipSound()))
 	{
 		return;
@@ -154,6 +159,11 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 		EquippedWeapon->GetEquipSound(),
 		BlasterCharacter->GetActorLocation()
 	);
+
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
+	}
 
 	BlasterCharacterRaw->GetCharacterMovement()->bOrientRotationToMovement = false;
 	BlasterCharacterRaw->bUseControllerRotationYaw = true;
@@ -226,6 +236,12 @@ bool UBlasterCombatComponent::CanFire() const
 		return false;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, CombatState: %s"),
+	       TEXT(__FUNCTION__),
+	       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"),
+	       CombatState == EBlasterCombatState::Unoccupied ? TEXT("Unoccupied") : TEXT("Reloading")
+	)
+
 	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == EBlasterCombatState::Unoccupied;
 }
 
@@ -281,6 +297,10 @@ void UBlasterCombatComponent::OnFireTimerCompleted()
 	if (bFireButtonPressed && EquippedWeapon->IsAutomatic())
 	{
 		Fire();
+	}
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
 	}
 }
 

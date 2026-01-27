@@ -300,7 +300,7 @@ private:
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> CameraComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetCombatComponent, Category="Blaster|Components")
+	UPROPERTY(VisibleAnywhere, BlueprintGetter=GetCombatComponent)
 	TObjectPtr<UBlasterCombatComponent> CombatComponent;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTimelineComponent> DissolveTimelineComponent;
