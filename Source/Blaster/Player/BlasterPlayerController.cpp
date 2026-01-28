@@ -180,9 +180,9 @@ void ABlasterPlayerController::OnCharacterOverlayInitialized()
 
 	bCharacterOverlayValid = true;
 
-	if (HasAuthority())
+	const ABlasterCharacter* BlasterCharacter{GetPawn<ABlasterCharacter>()};
+	if (HasAuthority() && BlasterCharacter)
 	{
-		const ABlasterCharacter* BlasterCharacter{GetPawn<ABlasterCharacter>()};
 		// Happens for local authoritative controller at spawn
 		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
 	}

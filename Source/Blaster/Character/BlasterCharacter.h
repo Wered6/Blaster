@@ -56,6 +56,8 @@ public:
 	virtual void Destroyed() override;
 
 private:
+	void InitializeInputMappingContext() const;
+	
 	void ShowPlayerName() const;
 
 	TWeakObjectPtr<ABlasterPlayerController> BlasterPlayerController;

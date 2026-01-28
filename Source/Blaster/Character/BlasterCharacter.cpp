@@ -89,27 +89,19 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 
 	if (!IsLocallyControlled())
 	{
-		// on the server, pawns that are NOT controlled by the host
+		// On the server, pawns that are NOT controlled by the host
 		ShowPlayerName();
+	}
+	else
+	{
+		// Locally controlled server
+		InitializeInputMappingContext();
 	}
 }
 
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (!ensure(DefaultMappingContext))
-	{
-		return;
-	}
-
-	if (const APlayerController* PlayerController{GetController<APlayerController>()})
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem{ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())})
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 
 	if (HasAuthority())
 	{
@@ -158,6 +150,12 @@ void ABlasterCharacter::OnRep_Controller()
 	// Controller is only valid on server and controlled clients
 	BlasterPlayerController = GetController<ABlasterPlayerController>();
 	CombatComponent->BlasterPlayerController = BlasterPlayerController;
+
+	if (IsLocallyControlled())
+	{
+		// Locally controlled clients
+		InitializeInputMappingContext();
+	}
 }
 
 void ABlasterCharacter::Destroyed()
@@ -169,6 +167,21 @@ void ABlasterCharacter::Destroyed()
 	if (EliminationBotParticleSystemComponent)
 	{
 		EliminationBotParticleSystemComponent->DestroyComponent();
+	}
+}
+
+void ABlasterCharacter::InitializeInputMappingContext() const
+{
+	if (!ensure(DefaultMappingContext))
+	{
+		return;
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem{
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(BlasterPlayerController->GetLocalPlayer())
+	})
+	{
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 }
 

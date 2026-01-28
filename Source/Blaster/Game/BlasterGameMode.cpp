@@ -8,6 +8,27 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 
+ABlasterGameMode::ABlasterGameMode()
+{
+	bDelayedStart = true;
+}
+
+void ABlasterGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FTimerHandle StartMatchTimerHandle;
+	GetWorldTimerManager().SetTimer(
+		StartMatchTimerHandle,
+		[this]
+		{
+			StartMatch();
+		},
+		WarmupTime,
+		false
+	);
+}
+
 void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* EliminatedCharacter,
                                         ABlasterPlayerController* VictimController,
                                         ABlasterPlayerController* AttackerController) const
