@@ -14,9 +14,6 @@
   <component name="ChangeListManager">
     <list default="true" id="514d93cb-68ba-4490-ab7f-090063651581" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blaster/HUD/WBP_CharacterOverlay.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/HUD/WBP_CharacterOverlay.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterCharacterOverlay.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterCharacterOverlay.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterCharacterOverlay.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterCharacterOverlay.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.h" afterDir="false" />
     </list>
@@ -32,7 +29,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://0" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://5" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/HUD/BlasterCharacterOverlay.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -401,7 +398,7 @@
       <workItem from="1769428671763" duration="9354000" />
       <workItem from="1769456243476" duration="3028000" />
       <workItem from="1769502437732" duration="17552000" />
-      <workItem from="1769587686532" duration="5151000" />
+      <workItem from="1769587686532" duration="7938000" />
     </task>
     <servers />
   </component>
