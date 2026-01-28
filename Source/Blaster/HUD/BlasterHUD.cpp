@@ -4,10 +4,9 @@
 #include "BlasterHUD.h"
 #include "BlasterCharacterOverlay.h"
 
-void ABlasterHUD::BeginPlay()
-{
-	Super::BeginPlay();
 
+void ABlasterHUD::AddCharacterOverlay()
+{
 	if (!ensure(CharacterOverlayClass))
 	{
 		return;
@@ -15,7 +14,7 @@ void ABlasterHUD::BeginPlay()
 
 	CharacterOverlay = CreateWidget<UBlasterCharacterOverlay>(GetOwningPlayerController(), CharacterOverlayClass);
 	CharacterOverlay->AddToViewport();
-
+	
 	OnCharacterOverlayInitializedDelegate.Broadcast();
 }
 

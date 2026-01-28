@@ -59,6 +59,8 @@ private:
 	void OnRep_CarriedAmmo();
 	
 	void UpdateAmmoValues();
+	
+	void SetHUDAmmo(int32 InWeaponAmmo, int32 InCarriedAmmo) const;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Ammo")
 	int32 StartingARAmmo{30};

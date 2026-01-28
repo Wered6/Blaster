@@ -6,7 +6,16 @@
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/HUD/BlasterCharacterOverlay.h"
 #include "Blaster/HUD/BlasterHUD.h"
+#include "GameFramework/GameMode.h"
+#include "Net/UnrealNetwork.h"
 
+
+void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABlasterPlayerController, MatchState)
+}
 
 void ABlasterPlayerController::ReceivedPlayer()
 {
@@ -22,6 +31,8 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	BlasterCharacter = Cast<ABlasterCharacter>(InPawn);
+
 	if (!bCharacterOverlayValid)
 	{
 		return;
@@ -29,9 +40,9 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 
 	if (IsLocalController())
 	{
-		const ABlasterCharacter* BlasterCharacter{Cast<ABlasterCharacter>(InPawn)};
+		const ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
 		// Happens for local authoritative controller at respawn 
-		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
+		SetHUDHealth(BlasterCharacterRaw->GetHealth(), BlasterCharacterRaw->GetMaxHealth());
 	}
 }
 
@@ -39,14 +50,16 @@ void ABlasterPlayerController::OnRep_Pawn()
 {
 	Super::OnRep_Pawn();
 
+	BlasterCharacter = GetPawn<ABlasterCharacter>();
+
 	if (!bCharacterOverlayValid)
 	{
 		return;
 	}
 
-	const ABlasterCharacter* BlasterCharacter{GetPawn<ABlasterCharacter>()};
-	// Happens for autonomous proxies at spawn and respawn 
-	SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
+	const ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
+	// Happens for autonomous proxies at respawn 
+	SetHUDHealth(BlasterCharacterRaw->GetHealth(), BlasterCharacterRaw->GetMaxHealth());
 }
 
 void ABlasterPlayerController::InitPlayerState()
@@ -65,6 +78,31 @@ void ABlasterPlayerController::Tick(float DeltaSeconds)
 	SetHUDTime();
 
 	CheckTimeSync(DeltaSeconds);
+}
+
+void ABlasterPlayerController::SetMatchState(const FName State)
+{
+	MatchState = State;
+
+	OnMatchStateSet();
+}
+
+void ABlasterPlayerController::OnMatchStateSet() const
+{
+	if (MatchState == MatchState::InProgress && IsLocalController())
+	{
+		BlasterHUD->AddCharacterOverlay();
+
+		const ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
+		// Happens for autonomous proxies at spawn
+		SetHUDHealth(BlasterCharacterRaw->GetHealth(), BlasterCharacterRaw->GetMaxHealth());
+	}
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ABlasterPlayerController::OnRep_MatchState()
+{
+	OnMatchStateSet();
 }
 
 float ABlasterPlayerController::GetServerTime()
@@ -180,11 +218,11 @@ void ABlasterPlayerController::OnCharacterOverlayInitialized()
 
 	bCharacterOverlayValid = true;
 
-	const ABlasterCharacter* BlasterCharacter{GetPawn<ABlasterCharacter>()};
-	if (HasAuthority() && BlasterCharacter)
+	const ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
+	if (HasAuthority() && BlasterCharacterRaw)
 	{
 		// Happens for local authoritative controller at spawn
-		SetHUDHealth(BlasterCharacter->GetHealth(), BlasterCharacter->GetMaxHealth());
+		SetHUDHealth(BlasterCharacterRaw->GetHealth(), BlasterCharacterRaw->GetMaxHealth());
 	}
 }
 

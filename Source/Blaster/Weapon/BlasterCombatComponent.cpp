@@ -5,6 +5,7 @@
 #include "BlasterWeaponBase.h"
 #include "BlasterWeaponTypes.h"
 #include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/HUD/BlasterCharacterOverlay.h"
 #include "Blaster/HUD/BlasterHUD.h"
 #include "Blaster/Player/BlasterPlayerController.h"
 #include "Camera/CameraComponent.h"
@@ -116,6 +117,12 @@ void UBlasterCombatComponent::UpdateAmmoValues()
 	EquippedWeapon->AddAmmo(-ReloadAmount);
 }
 
+void UBlasterCombatComponent::SetHUDAmmo(const int32 InWeaponAmmo, const int32 InCarriedAmmo) const
+{
+	BlasterHUD->GetCharacterOverlay()->SetWeaponAmmoAmountText(InWeaponAmmo);
+	BlasterHUD->GetCharacterOverlay()->SetCarriedAmmoAmountText(InCarriedAmmo);
+}
+
 void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 {
 	if (!Weapon)
@@ -174,6 +181,7 @@ void UBlasterCombatComponent::EquipWeapon(ABlasterWeaponBase* Weapon)
 			return;
 		}
 		BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+		SetHUDAmmo(EquippedWeapon->GetAmmo(), CarriedAmmo);
 	}
 }
 
@@ -187,6 +195,7 @@ void UBlasterCombatComponent::DropWeapon()
 		if (BlasterCharacter->IsLocallyControlled())
 		{
 			BlasterHUD->ResetCrosshairsPackage();
+			SetHUDAmmo(0, 0);
 		}
 	}
 }
@@ -201,6 +210,7 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 		if (BlasterCharacterRaw->IsLocallyControlled())
 		{
 			BlasterHUD->ResetCrosshairsPackage();
+			SetHUDAmmo(0, 0);
 		}
 		return;
 	}
@@ -226,6 +236,7 @@ void UBlasterCombatComponent::OnRep_EquippedWeapon()
 	if (BlasterCharacterRaw->IsLocallyControlled())
 	{
 		BlasterHUD->SetCrosshairsPackage(EquippedWeapon->GetCrosshairsPackage());
+		SetHUDAmmo(EquippedWeapon->GetAmmo(), CarriedAmmo);
 	}
 }
 
@@ -235,12 +246,6 @@ bool UBlasterCombatComponent::CanFire() const
 	{
 		return false;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("%s: machine: %s, CombatState: %s"),
-	       TEXT(__FUNCTION__),
-	       UE::GetPlayInEditorID() ? *FString::Printf(TEXT("Client %d"), UE::GetPlayInEditorID()) : TEXT("Server"),
-	       CombatState == EBlasterCombatState::Unoccupied ? TEXT("Unoccupied") : TEXT("Reloading")
-	)
 
 	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == EBlasterCombatState::Unoccupied;
 }

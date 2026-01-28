@@ -29,6 +29,17 @@ void ABlasterGameMode::BeginPlay()
 	);
 }
 
+void ABlasterGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		ABlasterPlayerController* BlasterPlayerController{Cast<ABlasterPlayerController>(*It)};
+		BlasterPlayerController->SetMatchState(MatchState);
+	}
+}
+
 void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* EliminatedCharacter,
                                         ABlasterPlayerController* VictimController,
                                         ABlasterPlayerController* AttackerController) const

@@ -57,9 +57,6 @@ public:
 		return EquipSound;
 	}
 
-protected:
-	virtual void OnRep_Owner() override;
-
 private:
 	UFUNCTION()
 	void OnRep_WeaponState();

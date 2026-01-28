@@ -65,27 +65,13 @@ void ABlasterWeaponBase::SetOwner(AActor* NewOwner)
 	Super::SetOwner(NewOwner);
 
 	BlasterOwnerCharacter = Cast<ABlasterCharacter>(NewOwner);
-	const ABlasterCharacter* BlasterOwnerCharacterRaw{BlasterOwnerCharacter.Get()};
-	const ABlasterPlayerController* BlasterOwnerPlayerControllerRaw{BlasterOwnerPlayerController.Get()};
-	
-	if (BlasterOwnerCharacterRaw)
+
+	if (BlasterOwnerCharacter.IsValid())
 	{
-		BlasterOwnerPlayerController = BlasterOwnerCharacterRaw->GetController<ABlasterPlayerController>();
-		BlasterOwnerPlayerControllerRaw = BlasterOwnerPlayerController.Get();
-		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->HasAuthority())
-		{
-			SetHUDWeaponAmmo(Ammo);
-			SetHUDCarriedAmmo(BlasterOwnerCharacterRaw->GetCombatComponent()->GetCarriedAmmo());
-		}
+		BlasterOwnerPlayerController = BlasterOwnerCharacter->GetController<ABlasterPlayerController>();
 	}
-	// when set owner to nullptr
 	else
 	{
-		if (BlasterOwnerPlayerControllerRaw && BlasterOwnerPlayerControllerRaw->HasAuthority())
-		{
-			SetHUDWeaponAmmo(0);
-			SetHUDCarriedAmmo(0);
-		}
 		BlasterOwnerPlayerController = nullptr;
 	}
 }
@@ -130,23 +116,6 @@ void ABlasterWeaponBase::Drop()
 	SetOwner(nullptr);
 	SetWeaponState(EBlasterWeaponState::Dropped);
 	WeaponMeshComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-}
-
-void ABlasterWeaponBase::OnRep_Owner()
-{
-	Super::OnRep_Owner();
-
-	const ABlasterCharacter* BlasterOwnerCharacterRaw{BlasterOwnerCharacter.Get()};
-	if (BlasterOwnerCharacterRaw)
-	{
-		SetHUDWeaponAmmo(Ammo);
-		SetHUDCarriedAmmo(BlasterOwnerCharacterRaw->GetCombatComponent()->GetCarriedAmmo());
-	}
-	else
-	{
-		SetHUDWeaponAmmo(0);
-		SetHUDCarriedAmmo(0);
-	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

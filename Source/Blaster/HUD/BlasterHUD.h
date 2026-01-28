@@ -19,12 +19,11 @@ class BLASTER_API ABlasterHUD : public AHUD
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void BeginPlay() override;
-
 #pragma region CharacterOverlay
 
 public:
+	void AddCharacterOverlay();
+	
 	FORCEINLINE UBlasterCharacterOverlay* GetCharacterOverlay() const
 	{
 		return CharacterOverlay;
