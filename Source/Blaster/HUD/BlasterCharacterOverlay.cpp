@@ -15,14 +15,16 @@ void UBlasterCharacterOverlay::SetHealthBarPercent(const float Percent) const
 	HealthBar->SetPercent(Percent);
 }
 
-void UBlasterCharacterOverlay::SetHealthText(const FString& HealthString) const
+void UBlasterCharacterOverlay::SetHealthText(const float Health, const float MaxHealth) const
 {
 	if (!ensure(HealthText))
 	{
 		return;
 	}
 
-	HealthText->SetText(FText::FromString(HealthString));
+	HealthText->SetText(FText::Format(FText::FromString(TEXT("{0}/{1}")),
+	                                  FText::AsNumber(FMath::CeilToInt(Health)),
+	                                  FText::AsNumber(FMath::CeilToInt(MaxHealth))));
 }
 
 void UBlasterCharacterOverlay::SetScoreText(const float Score) const
@@ -32,7 +34,7 @@ void UBlasterCharacterOverlay::SetScoreText(const float Score) const
 		return;
 	}
 
-	ScoreAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), FMath::FloorToInt(Score))));
+	ScoreAmountText->SetText(FText::AsNumber(Score));
 }
 
 void UBlasterCharacterOverlay::SetDefeatsText(const int32 Defeats) const
@@ -42,7 +44,7 @@ void UBlasterCharacterOverlay::SetDefeatsText(const int32 Defeats) const
 		return;
 	}
 
-	DefeatsAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Defeats)));
+	DefeatsAmountText->SetText(FText::AsNumber(Defeats));
 }
 
 void UBlasterCharacterOverlay::ShowEliminatedText(const float PlayRate)
@@ -67,7 +69,7 @@ void UBlasterCharacterOverlay::SetWeaponAmmoAmountText(const int32 AmmoAmount) c
 		return;
 	}
 
-	WeaponAmmoAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), AmmoAmount)));
+	WeaponAmmoAmountText->SetText(FText::AsNumber(AmmoAmount));
 }
 
 void UBlasterCharacterOverlay::SetCarriedAmmoAmountText(const int32 AmmoAmount) const
@@ -77,5 +79,24 @@ void UBlasterCharacterOverlay::SetCarriedAmmoAmountText(const int32 AmmoAmount) 
 		return;
 	}
 
-	CarriedAmmoAmountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), AmmoAmount)));
+	CarriedAmmoAmountText->SetText(FText::AsNumber(AmmoAmount));
+}
+
+void UBlasterCharacterOverlay::SetMatchCountdownText(const float CountdownTime) const
+{
+	if (!ensure(MatchCountdownText))
+	{
+		return;
+	}
+
+	const int32 TotalSeconds{FMath::FloorToInt(CountdownTime)};
+	const int32 Minutes{TotalSeconds / 60};
+	const int32 Seconds{TotalSeconds % 60};
+
+	FNumberFormattingOptions Options;
+	Options.SetMinimumIntegralDigits(2);
+
+	MatchCountdownText->SetText(FText::Format(FText::FromString(TEXT("{0}:{1}")),
+	                                          FText::AsNumber(Minutes, &Options),
+	                                          FText::AsNumber(Seconds, &Options)));;
 }

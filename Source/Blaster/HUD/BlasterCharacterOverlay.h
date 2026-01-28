@@ -19,7 +19,7 @@ class BLASTER_API UBlasterCharacterOverlay : public UUserWidget
 
 public:
 	void SetHealthBarPercent(const float Percent) const;
-	void SetHealthText(const FString& HealthString) const;
+	void SetHealthText(float Health, float MaxHealth) const;
 
 	void SetScoreText(const float Score) const;
 
@@ -29,6 +29,8 @@ public:
 
 	void SetWeaponAmmoAmountText(const int32 AmmoAmount) const;
 	void SetCarriedAmmoAmountText(const int32 AmmoAmount) const;
+	
+	void SetMatchCountdownText(const float CountdownTime) const;
 
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -48,4 +50,7 @@ private:
 	TObjectPtr<UTextBlock> WeaponAmmoAmountText;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> CarriedAmmoAmountText;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> MatchCountdownText;
 };

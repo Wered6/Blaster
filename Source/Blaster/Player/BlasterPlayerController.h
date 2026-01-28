@@ -22,9 +22,13 @@ public:
 	virtual void OnRep_Pawn() override;
 
 	virtual void ClientSetHUD_Implementation(TSubclassOf<AHUD> NewHUDClass) override;
-	void OnCharacterOverlayInitialized();
-
+	
 	virtual void InitPlayerState() override;
+	
+	virtual void Tick(float DeltaSeconds) override;
+	
+public:	
+	void OnCharacterOverlayInitialized();
 
 	void SetHUDHealth(const float Health, const float MaxHealth) const;
 
@@ -33,12 +37,19 @@ public:
 	void SetHUDDefeats(const int32 Defeats) const;
 
 	void ShowHUDEliminatedInfo(const float PlayRate) const;
-	
+
 	void SetHUDWeaponAmmo(const int32 AmmoAmount) const;
 	void SetHUDCarriedAmmo(const int32 AmmoAmount) const;
 
+	void SetHUDMatchCountdown(float CountdownTime) const;
+
 private:
+	void SetHUDTime();
+	
 	bool bCharacterOverlayValid{false};
+
+	float MatchTime{120.f};
+	uint32 Countdown{};
 
 	TWeakObjectPtr<ABlasterHUD> BlasterHUD;
 	TWeakObjectPtr<UBlasterCharacterOverlay> BlasterCharacterOverlay;

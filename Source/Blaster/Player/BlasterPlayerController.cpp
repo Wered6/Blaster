@@ -47,6 +47,22 @@ void ABlasterPlayerController::ClientSetHUD_Implementation(TSubclassOf<AHUD> New
 	BlasterHUD->OnCharacterOverlayInitializedDelegate.AddUObject(this, &ABlasterPlayerController::OnCharacterOverlayInitialized);
 }
 
+void ABlasterPlayerController::InitPlayerState()
+{
+	// Happens only on server
+	Super::InitPlayerState();
+
+	ABlasterPlayerState* BlasterPlayerState{GetPlayerState<ABlasterPlayerState>()};
+	BlasterPlayerState->OnPawnSet.AddDynamic(BlasterPlayerState, &ABlasterPlayerState::OnPawnInitialized);
+}
+
+void ABlasterPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	SetHUDTime();
+}
+
 void ABlasterPlayerController::OnCharacterOverlayInitialized()
 {
 	BlasterCharacterOverlay = BlasterHUD->GetCharacterOverlay();
@@ -61,15 +77,6 @@ void ABlasterPlayerController::OnCharacterOverlayInitialized()
 	}
 }
 
-void ABlasterPlayerController::InitPlayerState()
-{
-	// Happens only on server
-	Super::InitPlayerState();
-
-	ABlasterPlayerState* BlasterPlayerState{GetPlayerState<ABlasterPlayerState>()};
-	BlasterPlayerState->OnPawnSet.AddDynamic(BlasterPlayerState, &ABlasterPlayerState::OnPawnInitialized);
-}
-
 void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxHealth) const
 {
 	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
@@ -78,11 +85,8 @@ void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxH
 		return;
 	}
 
-	const float HealthPercent{Health / MaxHealth};
-	BlasterCharacterOverlayRaw->SetHealthBarPercent(HealthPercent);
-
-	const FString HealthText{FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth))};
-	BlasterCharacterOverlayRaw->SetHealthText(HealthText);
+	BlasterCharacterOverlayRaw->SetHealthBarPercent(Health / MaxHealth);
+	BlasterCharacterOverlayRaw->SetHealthText(Health, MaxHealth);
 }
 
 void ABlasterPlayerController::SetHUDScore(const float Score) const
@@ -138,4 +142,32 @@ void ABlasterPlayerController::SetHUDCarriedAmmo(const int32 AmmoAmount) const
 	}
 
 	BlasterCharacterOverlayRaw->SetCarriedAmmoAmountText(AmmoAmount);
+}
+
+void ABlasterPlayerController::SetHUDMatchCountdown(const float CountdownTime) const
+{
+	const UBlasterCharacterOverlay* BlasterCharacterOverlayRaw{BlasterCharacterOverlay.Get()};
+	if (!ensureAlways(BlasterCharacterOverlayRaw))
+	{
+		return;
+	}
+
+	BlasterCharacterOverlayRaw->SetMatchCountdownText(CountdownTime);
+}
+
+void ABlasterPlayerController::SetHUDTime()
+{
+	if (!bCharacterOverlayValid)
+	{
+		return;
+	}
+
+	const float RemainingSeconds = MatchTime - GetWorld()->GetTimeSeconds();
+	const uint32 SecondsLeft = FMath::CeilToInt(RemainingSeconds);
+	if (SecondsLeft != Countdown)
+	{
+		SetHUDMatchCountdown(RemainingSeconds);
+	}
+
+	Countdown = SecondsLeft;
 }
