@@ -100,6 +100,9 @@ void ABlasterPlayerController::HandleCooldown() const
 {
 	BlasterHUD->RemoveCharacterOverlay();
 	BlasterHUD->GetAnnouncementWidget()->SetVisibility(ESlateVisibility::Visible);
+	const FString AnnouncementText("New Match Starts In:");
+	BlasterHUD->GetAnnouncementWidget()->SetAnnouncementText(AnnouncementText);
+	BlasterHUD->GetAnnouncementWidget()->SetInfoText(FString());
 }
 
 void ABlasterPlayerController::Server_CheckMatchState_Implementation()
@@ -109,15 +112,20 @@ void ABlasterPlayerController::Server_CheckMatchState_Implementation()
 	MatchState = GameMode->GetMatchState();
 	WarmupTime = GameMode->GetWarmupTime();
 	MatchTime = GameMode->GetMatchTime();
+	CooldownTime = GameMode->GetCooldownTime();
 
-	Client_JoinMidGame(MatchState, WarmupTime, MatchTime);
+	Client_JoinMidGame(MatchState, WarmupTime, MatchTime, CooldownTime);
 }
 
-void ABlasterPlayerController::Client_JoinMidGame_Implementation(const FName InMatchState, const float InWarmupTime, const float InMatchTime)
+void ABlasterPlayerController::Client_JoinMidGame_Implementation(const FName InMatchState,
+                                                                 const float InWarmupTime,
+                                                                 const float InMatchTime,
+                                                                 const float InCooldownTime)
 {
 	MatchState = InMatchState;
 	WarmupTime = InWarmupTime;
 	MatchTime = InMatchTime;
+	CooldownTime = InCooldownTime;
 
 	if (MatchState == MatchState::WaitingToStart && IsLocalController())
 	{
@@ -311,11 +319,15 @@ void ABlasterPlayerController::SetHUDTime()
 	{
 		TimeLeft = WarmupTime + MatchTime - GetServerTime();
 	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		TimeLeft = WarmupTime + MatchTime + CooldownTime - GetServerTime();
+	}
 
 	const uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (SecondsLeft != Countdown)
 	{
-		if (MatchState == MatchState::WaitingToStart)
+		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
 		{
 			SetHUDAnnouncementCountdown(TimeLeft);
 		}

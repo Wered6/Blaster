@@ -48,6 +48,11 @@ public:
 		return MatchTime;
 	}
 
+	FORCEINLINE float GetCooldownTime() const
+	{
+		return CooldownTime;
+	}
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Match State")
 	float WarmupTime{10.f};

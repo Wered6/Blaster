@@ -18,7 +18,9 @@ class BLASTER_API UBlasterAnnouncementWidget : public UUserWidget
 
 public:
 	void SetWarmupTimeText(const float CountdownTime) const;
-	
+	void SetAnnouncementText(const FString& NewAnnouncementText) const;
+	void SetInfoText(const FString& NewInfoText) const;
+
 private:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> WarmupTimeText;

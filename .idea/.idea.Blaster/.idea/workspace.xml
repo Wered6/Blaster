@@ -14,11 +14,10 @@
   <component name="ChangeListManager">
     <list default="true" id="514d93cb-68ba-4490-ab7f-090063651581" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Blaster/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blaster/Game/BP_BlasterGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blaster/Game/BP_BlasterGameMode.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterHUD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterHUD.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterHUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterHUD.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterAnnouncementWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterAnnouncementWidget.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterAnnouncementWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterAnnouncementWidget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterCharacterOverlay.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/HUD/BlasterCharacterOverlay.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Blaster/Player/BlasterPlayerController.h" afterDir="false" />
     </list>
@@ -34,7 +33,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://29" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://30" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/Game/BlasterGameMode.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Blaster/HUD/BlasterAnnouncementWidget.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -426,7 +425,7 @@
       <workItem from="1769502437732" duration="17552000" />
       <workItem from="1769587686532" duration="9350000" />
       <workItem from="1769608843560" duration="16901000" />
-      <workItem from="1769674982466" duration="17478000" />
+      <workItem from="1769674982466" duration="19291000" />
     </task>
     <servers />
   </component>

@@ -89,6 +89,12 @@ void UBlasterCharacterOverlay::SetMatchCountdownText(const float CountdownTime) 
 		return;
 	}
 
+	if (CountdownTime < 0.f)
+	{
+		MatchCountdownText->SetText(FText());
+		return;
+	}
+
 	const int32 TotalSeconds{FMath::FloorToInt(CountdownTime)};
 	const int32 Minutes{TotalSeconds / 60};
 	const int32 Seconds{TotalSeconds % 60};

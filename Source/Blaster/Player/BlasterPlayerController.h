@@ -51,7 +51,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_CheckMatchState();
 	UFUNCTION(Client, Reliable)
-	void Client_JoinMidGame(const FName InMatchState, const float InWarmupTime, const float InMatchTime);
+	void Client_JoinMidGame(const FName InMatchState, const float InWarmupTime, const float InMatchTime, float InCooldownTime);
 
 	void OnMatchStateSet() const;
 
@@ -63,6 +63,7 @@ private:
 
 	float MatchTime{0.f};
 	float WarmupTime{0.f};
+	float CooldownTime{0.f};
 	uint32 Countdown{0};
 
 #pragma endregion
