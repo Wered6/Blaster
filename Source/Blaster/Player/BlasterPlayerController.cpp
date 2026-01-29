@@ -4,6 +4,7 @@
 #include "BlasterPlayerController.h"
 #include "BlasterPlayerState.h"
 #include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/Game/BlasterGameMode.h"
 #include "Blaster/HUD/BlasterAnnouncementWidget.h"
 #include "Blaster/HUD/BlasterCharacterOverlay.h"
 #include "Blaster/HUD/BlasterHUD.h"
@@ -72,6 +73,13 @@ void ABlasterPlayerController::InitPlayerState()
 	BlasterPlayerState->OnPawnSet.AddDynamic(BlasterPlayerState, &ABlasterPlayerState::OnPawnInitialized);
 }
 
+void ABlasterPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Server_CheckMatchState();
+}
+
 void ABlasterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -88,6 +96,29 @@ void ABlasterPlayerController::SetMatchState(const FName State)
 	OnMatchStateSet();
 }
 
+void ABlasterPlayerController::Server_CheckMatchState_Implementation()
+{
+	const ABlasterGameMode* GameMode{GetWorld()->GetAuthGameMode<ABlasterGameMode>()};
+
+	MatchState = GameMode->GetMatchState();
+	WarmupTime = GameMode->GetWarmupTime();
+	MatchTime = GameMode->GetMatchTime();
+
+	Client_JoinMidGame(MatchState, WarmupTime, MatchTime);
+}
+
+void ABlasterPlayerController::Client_JoinMidGame_Implementation(const FName InMatchState, const float InWarmupTime, const float InMatchTime)
+{
+	MatchState = InMatchState;
+	WarmupTime = InWarmupTime;
+	MatchTime = InMatchTime;
+
+	if (MatchState == MatchState::WaitingToStart && IsLocalController())
+	{
+		BlasterHUD->AddAnnouncementWidget();
+	}
+}
+
 void ABlasterPlayerController::OnMatchStateSet() const
 {
 	if (!IsLocalController())
@@ -95,10 +126,7 @@ void ABlasterPlayerController::OnMatchStateSet() const
 		return;
 	}
 
-	if (MatchState == MatchState::WaitingToStart)
-	{
-	}
-	else if (MatchState == MatchState::InProgress)
+	if (MatchState == MatchState::InProgress)
 	{
 		BlasterHUD->AddCharacterOverlay();
 		BlasterHUD->GetAnnouncementWidget()->SetVisibility(ESlateVisibility::Hidden);
@@ -153,7 +181,6 @@ void ABlasterPlayerController::ClientSetHUD_Implementation(TSubclassOf<AHUD> New
 
 	BlasterHUD = GetHUD<ABlasterHUD>();
 	BlasterHUD->OnCharacterOverlayInitializedDelegate.AddUObject(this, &ABlasterPlayerController::OnCharacterOverlayInitialized);
-	BlasterHUD->AddAnnouncementWidget();
 }
 
 void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxHealth) const
@@ -248,18 +275,44 @@ void ABlasterPlayerController::SetHUDMatchCountdown(const float CountdownTime) c
 	BlasterCharacterOverlayRaw->SetMatchCountdownText(CountdownTime);
 }
 
+void ABlasterPlayerController::SetHUDAnnouncementCountdown(const float CountdownTime) const
+{
+	const UBlasterAnnouncementWidget* BlasterAnnouncementWidget{BlasterHUD->GetAnnouncementWidget()};
+	// Not true in first call in SetHUDTime() for clients
+	if (BlasterAnnouncementWidget)
+	{
+		BlasterAnnouncementWidget->SetWarmupTimeText(CountdownTime);
+	}
+}
+
 void ABlasterPlayerController::SetHUDTime()
 {
-	if (!bCharacterOverlayValid)
+	if (!IsLocalController())
 	{
 		return;
 	}
 
-	const float RemainingSeconds = MatchTime - GetServerTime();
-	const uint32 SecondsLeft = FMath::CeilToInt(RemainingSeconds);
+	float TimeLeft{0.f};
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		TimeLeft = WarmupTime - GetServerTime();
+	}
+	else if (MatchState == MatchState::InProgress)
+	{
+		TimeLeft = WarmupTime + MatchTime - GetServerTime();
+	}
+
+	const uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (SecondsLeft != Countdown)
 	{
-		SetHUDMatchCountdown(RemainingSeconds);
+		if (MatchState == MatchState::WaitingToStart)
+		{
+			SetHUDAnnouncementCountdown(TimeLeft);
+		}
+		else if (MatchState == MatchState::InProgress)
+		{
+			SetHUDMatchCountdown(TimeLeft);
+		}
 	}
 
 	Countdown = SecondsLeft;

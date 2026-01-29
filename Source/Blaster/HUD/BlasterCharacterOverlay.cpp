@@ -98,5 +98,5 @@ void UBlasterCharacterOverlay::SetMatchCountdownText(const float CountdownTime) 
 
 	MatchCountdownText->SetText(FText::Format(FText::FromString(TEXT("{0}:{1}")),
 	                                          FText::AsNumber(Minutes, &Options),
-	                                          FText::AsNumber(Seconds, &Options)));;
+	                                          FText::AsNumber(Seconds, &Options)));
 }

@@ -20,10 +20,10 @@ class BLASTER_API ABlasterGameMode : public AGameMode
 
 public:
 	ABlasterGameMode();
-	
+
 protected:
 	virtual void BeginPlay() override;
-	
+
 	virtual void OnMatchStateSet() override;
 
 public:
@@ -33,7 +33,19 @@ public:
 
 	void RequestRespawn(ACharacter* EliminatedCharacter, AController* VictimController);
 
+	FORCEINLINE float GetWarmupTime() const
+	{
+		return WarmupTime;
+	}
+
+	FORCEINLINE float GetMatchTime() const
+	{
+		return MatchTime;
+	}
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Match State")
 	float WarmupTime{10.f};
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Match State")
+	float MatchTime{120.f};
 };

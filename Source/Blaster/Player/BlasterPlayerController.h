@@ -20,7 +20,7 @@ class BLASTER_API ABlasterPlayerController : public APlayerController
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
 	// Sync with server clock as soon as possible
 	virtual void ReceivedPlayer() override;
 
@@ -29,6 +29,10 @@ public:
 
 	virtual void InitPlayerState() override;
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
@@ -37,20 +41,26 @@ private:
 	TWeakObjectPtr<UBlasterCharacterOverlay> BlasterCharacterOverlay;
 
 #pragma region Match
-	
+
 public:
 	void SetMatchState(const FName State);
 
 private:
+	UFUNCTION(Server, Reliable)
+	void Server_CheckMatchState();
+	UFUNCTION(Client, Reliable)
+	void Client_JoinMidGame(const FName InMatchState, const float InWarmupTime, const float InMatchTime);
+
 	void OnMatchStateSet() const;
-	
+
 	UFUNCTION()
 	void OnRep_MatchState();
-	
+
 	UPROPERTY(ReplicatedUsing=OnRep_MatchState)
 	FName MatchState;
-	
-	float MatchTime{120.f};
+
+	float MatchTime{0.f};
+	float WarmupTime{0.f};
 	uint32 Countdown{0};
 
 #pragma endregion
@@ -101,7 +111,9 @@ public:
 private:
 	void OnCharacterOverlayInitialized();
 
-	void SetHUDMatchCountdown(float CountdownTime) const;
+	void SetHUDMatchCountdown(const float CountdownTime) const;
+	
+	void SetHUDAnnouncementCountdown(const float CountdownTime) const;
 
 	void SetHUDTime();
 
