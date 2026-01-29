@@ -43,6 +43,7 @@ private:
 
 public:
 	void AddCharacterOverlay();
+	void RemoveCharacterOverlay() const;
 
 	FORCEINLINE UBlasterCharacterOverlay* GetCharacterOverlay() const
 	{

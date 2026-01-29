@@ -8,6 +8,11 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 
+namespace MatchState
+{
+	const FName Cooldown = FName(TEXT("Cooldown"));
+}
+
 ABlasterGameMode::ABlasterGameMode()
 {
 	bDelayedStart = true;
@@ -37,6 +42,20 @@ void ABlasterGameMode::OnMatchStateSet()
 	{
 		ABlasterPlayerController* BlasterPlayerController{Cast<ABlasterPlayerController>(*It)};
 		BlasterPlayerController->SetMatchState(MatchState);
+	}
+
+	if (MatchState == MatchState::InProgress)
+	{
+		FTimerHandle CooldownTimerHandle;
+		GetWorldTimerManager().SetTimer(
+			CooldownTimerHandle,
+			[this]
+			{
+				SetMatchState(MatchState::Cooldown);
+			},
+			MatchTime,
+			false
+		);
 	}
 }
 

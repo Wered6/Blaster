@@ -45,6 +45,8 @@ private:
 public:
 	void SetMatchState(const FName State);
 
+	void HandleCooldown() const;
+	
 private:
 	UFUNCTION(Server, Reliable)
 	void Server_CheckMatchState();

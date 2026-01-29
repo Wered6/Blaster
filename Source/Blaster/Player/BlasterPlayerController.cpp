@@ -96,6 +96,12 @@ void ABlasterPlayerController::SetMatchState(const FName State)
 	OnMatchStateSet();
 }
 
+void ABlasterPlayerController::HandleCooldown() const
+{
+	BlasterHUD->RemoveCharacterOverlay();
+	BlasterHUD->GetAnnouncementWidget()->SetVisibility(ESlateVisibility::Visible);
+}
+
 void ABlasterPlayerController::Server_CheckMatchState_Implementation()
 {
 	const ABlasterGameMode* GameMode{GetWorld()->GetAuthGameMode<ABlasterGameMode>()};
@@ -134,6 +140,10 @@ void ABlasterPlayerController::OnMatchStateSet() const
 		const ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
 		// Happens for autonomous proxies at spawn
 		SetHUDHealth(BlasterCharacterRaw->GetHealth(), BlasterCharacterRaw->GetMaxHealth());
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		HandleCooldown();
 	}
 }
 

@@ -30,6 +30,11 @@ void ABlasterHUD::AddCharacterOverlay()
 	OnCharacterOverlayInitializedDelegate.Broadcast();
 }
 
+void ABlasterHUD::RemoveCharacterOverlay() const
+{
+	CharacterOverlay->RemoveFromParent();
+}
+
 void ABlasterHUD::DrawHUD()
 {
 	Super::DrawHUD();
