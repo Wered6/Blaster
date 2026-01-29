@@ -4,6 +4,7 @@
 #include "BlasterPlayerController.h"
 #include "BlasterPlayerState.h"
 #include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/HUD/BlasterAnnouncementWidget.h"
 #include "Blaster/HUD/BlasterCharacterOverlay.h"
 #include "Blaster/HUD/BlasterHUD.h"
 #include "GameFramework/GameMode.h"
@@ -89,9 +90,18 @@ void ABlasterPlayerController::SetMatchState(const FName State)
 
 void ABlasterPlayerController::OnMatchStateSet() const
 {
-	if (MatchState == MatchState::InProgress && IsLocalController())
+	if (!IsLocalController())
+	{
+		return;
+	}
+
+	if (MatchState == MatchState::WaitingToStart)
+	{
+	}
+	else if (MatchState == MatchState::InProgress)
 	{
 		BlasterHUD->AddCharacterOverlay();
+		BlasterHUD->GetAnnouncementWidget()->SetVisibility(ESlateVisibility::Hidden);
 
 		const ABlasterCharacter* BlasterCharacterRaw{BlasterCharacter.Get()};
 		// Happens for autonomous proxies at spawn
@@ -143,6 +153,7 @@ void ABlasterPlayerController::ClientSetHUD_Implementation(TSubclassOf<AHUD> New
 
 	BlasterHUD = GetHUD<ABlasterHUD>();
 	BlasterHUD->OnCharacterOverlayInitializedDelegate.AddUObject(this, &ABlasterPlayerController::OnCharacterOverlayInitialized);
+	BlasterHUD->AddAnnouncementWidget();
 }
 
 void ABlasterPlayerController::SetHUDHealth(const float Health, const float MaxHealth) const

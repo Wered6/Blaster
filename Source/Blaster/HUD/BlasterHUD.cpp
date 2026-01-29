@@ -2,8 +2,20 @@
 
 
 #include "BlasterHUD.h"
+#include "BlasterAnnouncementWidget.h"
 #include "BlasterCharacterOverlay.h"
 
+
+void ABlasterHUD::AddAnnouncementWidget()
+{
+	if (!ensure(AnnouncementWidgetClass))
+	{
+		return;
+	}
+
+	AnnouncementWidget = CreateWidget<UBlasterAnnouncementWidget>(GetOwningPlayerController(), AnnouncementWidgetClass);
+	AnnouncementWidget->AddToViewport();
+}
 
 void ABlasterHUD::AddCharacterOverlay()
 {
@@ -14,7 +26,7 @@ void ABlasterHUD::AddCharacterOverlay()
 
 	CharacterOverlay = CreateWidget<UBlasterCharacterOverlay>(GetOwningPlayerController(), CharacterOverlayClass);
 	CharacterOverlay->AddToViewport();
-	
+
 	OnCharacterOverlayInitializedDelegate.Broadcast();
 }
 

@@ -7,9 +7,10 @@
 #include "GameFramework/HUD.h"
 #include "BlasterHUD.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnCharacterOverlayInitializedSignature)
-
+class UBlasterAnnouncementWidget;
 class UBlasterCharacterOverlay;
+
+DECLARE_MULTICAST_DELEGATE(FOnCharacterOverlayInitializedSignature)
 
 /**
  * 
@@ -19,11 +20,30 @@ class BLASTER_API ABlasterHUD : public AHUD
 {
 	GENERATED_BODY()
 
-#pragma region CharacterOverlay
+#pragma region Announcement
+
+public:
+	void AddAnnouncementWidget();
+
+	FORCEINLINE UBlasterAnnouncementWidget* GetAnnouncementWidget() const
+	{
+		return AnnouncementWidget;
+	}
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Announcement")
+	TSubclassOf<UBlasterAnnouncementWidget> AnnouncementWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UBlasterAnnouncementWidget> AnnouncementWidget;
+
+#pragma endregion
+
+#pragma region Character Overlay
 
 public:
 	void AddCharacterOverlay();
-	
+
 	FORCEINLINE UBlasterCharacterOverlay* GetCharacterOverlay() const
 	{
 		return CharacterOverlay;
@@ -32,7 +52,7 @@ public:
 	FOnCharacterOverlayInitializedSignature OnCharacterOverlayInitializedDelegate;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category="Blaster|Overlay")
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Character Overlay")
 	TSubclassOf<UBlasterCharacterOverlay> CharacterOverlayClass;
 
 	UPROPERTY()
