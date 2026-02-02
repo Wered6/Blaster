@@ -9,13 +9,9 @@ void ABlasterLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 
 	const int32 PlayerCount{GameState->PlayerArray.Num()};
-	if (PlayerCount == 2)
+	if (PlayerCount == NumberOfPlayers)
 	{
-		UWorld* World{GetWorld()};
-		if (World)
-		{
-			bUseSeamlessTravel = true;
-			World->ServerTravel(FString("/Game/Blaster/Maps/Lvl_Blaster?listen"));
-		}
+		bUseSeamlessTravel = true;
+		GetWorld()->ServerTravel(FString("/Game/Blaster/Map/Lvl_Blaster?listen"));
 	}
 }

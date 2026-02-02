@@ -17,12 +17,12 @@ void UMenu::MenuSetup(const int32 InNumPublicConnections, FString InMatchType, c
 	SetVisibility(ESlateVisibility::Visible);
 	SetIsFocusable(true);
 
-	const UWorld* World{GetWorld()};
+	const UWorld* World = GetWorld();
 	if (!ensure(World))
 	{
 		return;
 	}
-	APlayerController* PlayerController{World->GetFirstPlayerController()};
+	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (!ensure(PlayerController))
 	{
 		return;
@@ -35,7 +35,7 @@ void UMenu::MenuSetup(const int32 InNumPublicConnections, FString InMatchType, c
 	PlayerController->SetInputMode(InputModeUIOnly);
 	PlayerController->SetShowMouseCursor(true);
 
-	const UGameInstance* GameInstance{GetGameInstance()};
+	const UGameInstance* GameInstance = GetGameInstance();
 	if (!ensure(GameInstance))
 	{
 		return;
@@ -99,7 +99,7 @@ void UMenu::OnCreateSessionCompleted(bool bWasSuccessful)
 			);
 		}
 
-		UWorld* World{GetWorld()};
+		UWorld* World = GetWorld();
 		if (!ensure(World))
 		{
 			return;
@@ -157,13 +157,13 @@ void UMenu::OnJoinSessionCompleted(EOnJoinSessionCompleteResult::Type Result)
 		return;
 	}
 
-	const IOnlineSessionPtr SessionInterface{Subsystem->GetSessionInterface()};
+	const IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface();
 	if (SessionInterface.IsValid())
 	{
 		FString Address;
 		SessionInterface->GetResolvedConnectString(NAME_GameSession, Address);
 
-		APlayerController* PlayerController{GetGameInstance()->GetFirstLocalPlayerController()};
+		APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
 		if (!ensure(PlayerController))
 		{
 			return;
@@ -192,13 +192,13 @@ void UMenu::MenuTearDown()
 {
 	RemoveFromParent();
 
-	const UWorld* World{GetWorld()};
+	const UWorld* World = GetWorld();
 	if (!ensure(World))
 	{
 		return;
 	}
 
-	APlayerController* PlayerController{World->GetFirstPlayerController()};
+	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (PlayerController)
 	{
 		const FInputModeGameOnly InputModeGameOnly;
@@ -210,13 +210,17 @@ void UMenu::MenuTearDown()
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UMenu::OnHostButtonClicked()
 {
-	HostButton->SetIsEnabled(false);
-
+	if (!ensure(HostButton))
+	{
+		return;
+	}
 	if (!ensure(MultiplayerSessionsSubsystem))
 	{
 		return;
 	}
 
+	HostButton->SetIsEnabled(false);
+	
 	MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType);
 }
 

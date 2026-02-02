@@ -22,13 +22,10 @@ void ABlasterGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FTimerHandle StartMatchTimerHandle;
 	GetWorldTimerManager().SetTimer(
-		StartMatchTimerHandle,
-		[this]
-		{
-			StartMatch();
-		},
+		WarmupTimerHandle,
+		this,
+		&ABlasterGameMode::OnWarmupTimerCompleted,
 		WarmupTime,
 		false
 	);
@@ -41,19 +38,29 @@ void ABlasterGameMode::OnMatchStateSet()
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		ABlasterPlayerController* BlasterPlayerController{Cast<ABlasterPlayerController>(*It)};
-		BlasterPlayerController->SetMatchState(MatchState);
+		if (BlasterPlayerController)
+		{
+			BlasterPlayerController->SetMatchState(MatchState);
+		}
 	}
 
 	if (MatchState == MatchState::InProgress)
 	{
-		FTimerHandle CooldownTimerHandle;
+		GetWorldTimerManager().SetTimer(
+			MatchTimerHandle,
+			this,
+			&ABlasterGameMode::OnMatchTimerCompleted,
+			MatchTime,
+			false
+		);
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
 		GetWorldTimerManager().SetTimer(
 			CooldownTimerHandle,
-			[this]
-			{
-				SetMatchState(MatchState::Cooldown);
-			},
-			MatchTime,
+			this,
+			&ABlasterGameMode::OnCooldownTimerCompleted,
+			CooldownTime,
 			false
 		);
 	}
@@ -85,4 +92,19 @@ void ABlasterGameMode::RequestRespawn(ACharacter* EliminatedCharacter, AControll
 	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
 	const int32 Selection{FMath::RandRange(0, PlayerStarts.Num() - 1)};
 	RestartPlayerAtPlayerStart(VictimController, PlayerStarts[Selection]);
+}
+
+void ABlasterGameMode::OnWarmupTimerCompleted()
+{
+	StartMatch();
+}
+
+void ABlasterGameMode::OnMatchTimerCompleted()
+{
+	SetMatchState(MatchState::Cooldown);
+}
+
+void ABlasterGameMode::OnCooldownTimerCompleted()
+{
+	RestartGame();
 }

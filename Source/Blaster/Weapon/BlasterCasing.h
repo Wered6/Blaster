@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BlasterCasing.generated.h"
 
+class USoundCue;
+
 UCLASS()
 class BLASTER_API ABlasterCasing : public AActor
 {

@@ -44,7 +44,12 @@ void UBlasterCombatComponent::BeginPlay()
 
 	if (BlasterCharacter->IsLocallyControlled())
 	{
-		if (!ensureMsgf(BlasterPlayerController.Get(), TEXT("Probably BlasterPlayerController is not set in Game Mode")))
+		// if (!ensureMsgf(BlasterPlayerController.Get(), TEXT("Probably BlasterPlayerController is not set in Game Mode")))
+		// {
+		// 	return;
+		// }
+		// Not valid in LobbyGameMode because it is set to default controller
+		if (!BlasterPlayerController.IsValid())
 		{
 			return;
 		}

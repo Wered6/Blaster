@@ -54,10 +54,18 @@ public:
 	}
 
 private:
+	void OnWarmupTimerCompleted();
+	void OnMatchTimerCompleted();
+	void OnCooldownTimerCompleted();
+	
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Match State")
 	float WarmupTime{10.f};
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Match State")
 	float MatchTime{120.f};
 	UPROPERTY(EditDefaultsOnly, Category="Blaster|Match State")
 	float CooldownTime{10.f};
+	
+	FTimerHandle WarmupTimerHandle;
+	FTimerHandle MatchTimerHandle;
+	FTimerHandle CooldownTimerHandle;
 };

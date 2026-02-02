@@ -84,6 +84,11 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	BlasterPlayerController = GetController<ABlasterPlayerController>();
+	// Not valid in LobbyGameMode because it is set to default controller
+	if (!BlasterPlayerController.IsValid())
+	{
+		return;
+	}
 	CombatComponent->BlasterPlayerController = BlasterPlayerController;
 	CombatComponent->BlasterHUD = BlasterPlayerController->GetHUD<ABlasterHUD>();
 
@@ -149,6 +154,11 @@ void ABlasterCharacter::OnRep_Controller()
 
 	// Controller is only valid on server and controlled clients
 	BlasterPlayerController = GetController<ABlasterPlayerController>();
+	if (!BlasterPlayerController.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: BlasterPlayerController is nullptr"), TEXT(__FUNCTION__))
+		return;
+	}
 	CombatComponent->BlasterPlayerController = BlasterPlayerController;
 
 	if (IsLocallyControlled())
@@ -183,6 +193,35 @@ void ABlasterCharacter::InitializeInputMappingContext() const
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+}
+
+void ABlasterCharacter::ShowPlayerName() const
+{
+	// Make sure widget is valid
+	const UUserWidget* Widget{OverheadWidgetComponent->GetUserWidgetObject()};
+	if (!Widget)
+	{
+		OverheadWidgetComponent->InitWidget();
+	}
+
+	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
+	if (!ensureAlways(BlasterOverheadWidget))
+	{
+		return;
+	}
+
+	BlasterOverheadWidget->ShowPlayerName(this);
+}
+
+void ABlasterCharacter::Eliminate()
+{
+	if (CombatComponent->EquippedWeapon)
+	{
+		CombatComponent->DropWeapon();
+	}
+
+	Multicast_Eliminate();
+	GetWorldTimerManager().SetTimer(EliminationTimer, this, &ABlasterCharacter::EliminationTimerCompleted, EliminationDelay);
 }
 
 void ABlasterCharacter::Multicast_Eliminate_Implementation()
@@ -236,35 +275,6 @@ void ABlasterCharacter::Multicast_Eliminate_Implementation()
 	{
 		BlasterPlayerController->ShowHUDEliminatedInfo(EliminationDelay);
 	}
-}
-
-void ABlasterCharacter::ShowPlayerName() const
-{
-	// Make sure widget is valid
-	const UUserWidget* Widget{OverheadWidgetComponent->GetUserWidgetObject()};
-	if (!Widget)
-	{
-		OverheadWidgetComponent->InitWidget();
-	}
-
-	const UBlasterOverheadWidget* BlasterOverheadWidget{Cast<UBlasterOverheadWidget>(OverheadWidgetComponent->GetUserWidgetObject())};
-	if (!ensureAlways(BlasterOverheadWidget))
-	{
-		return;
-	}
-
-	BlasterOverheadWidget->ShowPlayerName(this);
-}
-
-void ABlasterCharacter::Eliminate()
-{
-	if (CombatComponent->EquippedWeapon)
-	{
-		CombatComponent->DropWeapon();
-	}
-
-	Multicast_Eliminate();
-	GetWorldTimerManager().SetTimer(EliminationTimer, this, &ABlasterCharacter::EliminationTimerCompleted, EliminationDelay);
 }
 
 void ABlasterCharacter::PlayEliminationMontage() const
@@ -435,6 +445,18 @@ void ABlasterCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxisVector.Y);
 }
 
+void ABlasterCharacter::Jump()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Super::Jump();
+	}
+}
+
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ABlasterCharacter::Equip()
 {
@@ -500,18 +522,6 @@ void ABlasterCharacter::FireStop()
 void ABlasterCharacter::Reload()
 {
 	CombatComponent->Reload();
-}
-
-void ABlasterCharacter::Jump()
-{
-	if (bIsCrouched)
-	{
-		UnCrouch();
-	}
-	else
-	{
-		Super::Jump();
-	}
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(ABlasterWeaponBase* Weapon)

@@ -70,6 +70,10 @@ void ABlasterPlayerController::InitPlayerState()
 	Super::InitPlayerState();
 
 	ABlasterPlayerState* BlasterPlayerState{GetPlayerState<ABlasterPlayerState>()};
+	if (!BlasterPlayerState)
+	{
+		return;
+	}
 	BlasterPlayerState->OnPawnSet.AddDynamic(BlasterPlayerState, &ABlasterPlayerState::OnPawnInitialized);
 }
 

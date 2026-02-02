@@ -16,4 +16,8 @@ class BLASTER_API ABlasterLobbyGameMode : public AGameMode
 	
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Blaster|Travel")
+	int32 NumberOfPlayers{2};
 };

@@ -20,6 +20,7 @@ class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
+class USoundCue;
 
 UENUM(BlueprintType)
 enum class ETurningInPlace : uint8
